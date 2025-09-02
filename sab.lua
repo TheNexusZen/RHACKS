@@ -1,6 +1,8 @@
 local sab = 109983668079237
 local AkaliNotif = loadstring(game:HttpGet("https://raw.githubusercontent.com/Kinlei/Dynissimo/main/Scripts/AkaliNotif.lua"))();
 local Notify = AkaliNotif.Notify;
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
 
 if game.PlaceId == sab then
     print("sab")
