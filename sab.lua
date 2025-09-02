@@ -3,7 +3,11 @@ local AkaliNotif = loadstring(game:HttpGet("https://raw.githubusercontent.com/Ki
 local Notify = AkaliNotif.Notify;
 
 if game.PlaceId == sab then
-    
+    Notify({
+Description = "Succesfully Loaded! Place Id:"sab"";
+Title = "Loadstring Loaded";
+Duration = 5;
+});
 else
     Notify({
 Description = "You Arent In Steal A Brainrot Or In The New Player Servers";
