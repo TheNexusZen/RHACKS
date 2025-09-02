@@ -3,12 +3,14 @@ local AkaliNotif = loadstring(game:HttpGet("https://raw.githubusercontent.com/Ki
 local Notify = AkaliNotif.Notify;
 
 if game.PlaceId == sab then
+    print("sab")
     Notify({
 Description = "Succesfully Loaded! Place Id:"sab"";
 Title = "Loadstring Loaded";
 Duration = 5;
 });
 else
+    print("not in sab")
     Notify({
 Description = "You Arent In Steal A Brainrot Or In The New Player Servers";
 Title = "Failed To Load | ErrorCode: 400";
