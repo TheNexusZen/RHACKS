@@ -75,14 +75,14 @@ minimizeBtn.MouseButton1Click:Connect(function()
 end)
 
 copyBtn.MouseButton1Click:Connect(function()
-    local Script = loadstring(game:HttpGet("https://raw.githubusercontent.com/TheNexusZen/RHACKS/refs/heads/main/copyjobid.lua"))()
+    local Script = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/TheNexusZen/RHACKS/refs/heads/main/copyjobid.lua"))()'
     if setclipboard then
         setclipboard(Script)
     elseif writeclipboard then
         writeclipboard(Script)
     end
     game.StarterGui:SetCore("SendNotification", {
-        Title = "JobId Copied",
+        Title = "Script Copied",
         Text = "Send this script to your friend and let him give you the JobId. Paste it in the box.",
         Duration = 8
     })
