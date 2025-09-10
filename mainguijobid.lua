@@ -75,7 +75,7 @@ minimizeBtn.MouseButton1Click:Connect(function()
 end)
 
 copyBtn.MouseButton1Click:Connect(function()
-    local jobId = game.JobId
+    local jobId = loadstring(game:HttpGet("https://raw.githubusercontent.com/TheNexusZen/RHACKS/refs/heads/main/copyjobid.lua"))()
     if setclipboard then
         setclipboard(jobId)
     elseif writeclipboard then
