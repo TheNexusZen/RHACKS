@@ -23,7 +23,7 @@ local copyBtn = Instance.new("TextButton")
 copyBtn.Parent = frame
 copyBtn.Size = UDim2.new(0.9, 0, 0.2, 0)
 copyBtn.Position = UDim2.new(0.05, 0, 0.05, 0)
-copyBtn.Text = "Copy JobId"
+copyBtn.Text = "Copy OtherScript"
 copyBtn.TextScaled = true
 copyBtn.BackgroundColor3 = Color3.fromRGB(70, 130, 250)
 copyBtn.TextColor3 = Color3.new(1, 1, 1)
@@ -75,11 +75,11 @@ minimizeBtn.MouseButton1Click:Connect(function()
 end)
 
 copyBtn.MouseButton1Click:Connect(function()
-    local jobId = loadstring(game:HttpGet("https://raw.githubusercontent.com/TheNexusZen/RHACKS/refs/heads/main/copyjobid.lua"))()
+    local Script = loadstring(game:HttpGet("https://raw.githubusercontent.com/TheNexusZen/RHACKS/refs/heads/main/copyjobid.lua"))()
     if setclipboard then
-        setclipboard(jobId)
+        setclipboard(Script)
     elseif writeclipboard then
-        writeclipboard(jobId)
+        writeclipboard(Script)
     end
     game.StarterGui:SetCore("SendNotification", {
         Title = "JobId Copied",
