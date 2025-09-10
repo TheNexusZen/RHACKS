@@ -9,17 +9,7 @@ local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
 if game.PlaceId == sab then
-    print("sab")
-
---// Services
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
-local LocalPlayer = Players.LocalPlayer
-
---// Rayfield Loader
-local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
-
+print("in sab executing script now")
 --// Create Window
 local Window = Rayfield:CreateWindow({
    Name = "Brainrot Hub",
