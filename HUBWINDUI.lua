@@ -25,12 +25,15 @@ local Window = WindUI:CreateWindow({
     ScrollBarEnabled = false,
     
     User = {
-        Enabled = true,
-        Anonymous = true,
-        Callback = function()
-            print("clicked")
-        end,
-    },
+    Enabled = true,
+    Anonymous = true,
+    Callback = function()
+        User.Anonymous = not User.Anonymous
+        Window.Icon:SetAnonymous(User.Anonymous)
+        print("Anonymous:", User.Anonymous)
+    end,
+}
+
     
     KeySystem = {                                                   
         Note = "Compelete Key System To Continue Join Our Discord To Win Free Keys",        
