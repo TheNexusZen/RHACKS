@@ -28,7 +28,10 @@ local Window = WindUI:CreateWindow({
         Enabled = true,
         Anonymous = true,
         Callback = function()
-            print("clicked")
+            If User.Anonymous = true then
+                    Window.Icon:SetAnonymous(false)
+                else
+                    Window.Icon:SetAnonymous(true)
         end,
     },
 
