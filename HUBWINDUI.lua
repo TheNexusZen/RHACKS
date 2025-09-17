@@ -28,12 +28,7 @@ local Window = WindUI:CreateWindow({
     Enabled = true,
     Anonymous = true,
     Callback = function()
-        WindUI:Notify({
-    Title = "WARNING!",
-    Content = "You Cant Turn Off Anonymous For Reasons Like Getting Banned Etc, Thank You.",
-    Duration = 3,
-    Icon = "warn",
-})
+        print("true")
     end,
 }
 
