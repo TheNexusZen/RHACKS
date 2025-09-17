@@ -1,0 +1,43 @@
+local Version = "1.6.41"
+local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/download/" .. Version .. "/main.lua"))()
+
+WindUI:SetNotificationLower(true)
+WindUI:SetTheme("Dark")
+
+local Window = WindUI:CreateWindow({
+    Title = "NexusHub",
+    Icon = "door-open", -- lucide icon
+    Author = "by NexueZen A Solo Dev Guy",
+    Folder = "NexusHubConfig",
+    
+    -- ↓ This all is Optional. You can remove it.
+    Size = UDim2.fromOffset(580, 460),
+    MinSize = Vector2.new(560, 350),
+    MaxSize = Vector2.new(850, 560),
+    Transparent = false,
+    Theme = "Dark",
+    Resizable = false,
+    SideBarWidth = 200,
+    BackgroundImageTransparency = 0,
+    HideSearchBar = true,
+    ScrollBarEnabled = false,
+    
+    User = {
+        Enabled = true,
+        Anonymous = true,
+        Callback = function()
+            print("clicked")
+        end,
+    },
+    
+    KeySystem = {                                                   
+        Note = "Compelete Key System To Continue Join Our Discord To Win Free Keys",        
+        API = {                                                     
+            { -- pandadevelopment
+                Type = "pandadevelopment", -- type
+                ServiceId = "sidezen_clicker_1337", -- service id
+            },                                                      
+        },                                                          
+    },                                                              
+})
+ 
