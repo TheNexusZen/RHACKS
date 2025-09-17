@@ -117,7 +117,14 @@ local JumpSlider = Player:Slider({
 RunService.RenderStepped:Connect(function()
     if hum then
         hum.WalkSpeed = speedValue
+        if hum then
+    if hum.UseJumpPower ~= nil and hum.UseJumpPower == true then
         hum.JumpPower = jumpValue
+    else
+        hum.JumpHeight = jumpValue / 3.57
+    end
+end
+
     end
 end)
 
