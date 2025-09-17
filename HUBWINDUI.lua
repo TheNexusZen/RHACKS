@@ -1,7 +1,8 @@
 local Version = "1.6.41"
 local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/download/" .. Version .. "/main.lua"))()
 local Players = game:GetService("Players")
-local Plr = Players.LocalPlayer
+local plr = Players.LocalPlayer
+local RunService = game:GetService("RunService")
 
 
 WindUI:SetNotificationLower(true)
@@ -77,8 +78,46 @@ Window:Tag({
     Radius = 0, -- from 0 to 13
 })
 
-local Tab = Window:Tab({
+local Player = Window:Tab({
     Title = "Player",
     Icon = "user",
     Locked = false,
 })
+
+local hum
+
+local function hookHumanoid(char)
+    hum = char:WaitForChild("Humanoid")
+end
+
+plr.CharacterAdded:Connect(hookHumanoid)
+if plr.Character then hookHumanoid(plr.Character) end
+
+local speedValue = 70
+local jumpValue = 50
+
+local SpeedSlider = Player:Slider({
+    Title = "Speed",
+    Step = 1,
+    Value = {Min = 20, Max = 120, Default = speedValue},
+    Callback = function(val)
+        speedValue = val
+    end
+})
+
+local JumpSlider = Player:Slider({
+    Title = "JumpPower",
+    Step = 1,
+    Value = {Min = 20, Max = 200, Default = jumpValue},
+    Callback = function(val)
+        jumpValue = val
+    end
+})
+
+RunService.RenderStepped:Connect(function()
+    if hum then
+        hum.WalkSpeed = speedValue
+        hum.JumpPower = jumpValue
+    end
+end)
+
