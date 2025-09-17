@@ -54,4 +54,8 @@ Window:EditOpenButton({
     Enabled = true,
     Draggable = false,
 })
- 
+local Tab = Window:Tab({
+    Title = "Player",
+    Icon = "user",
+    Locked = false,
+})
