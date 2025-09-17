@@ -28,10 +28,12 @@ local Window = WindUI:CreateWindow({
     Enabled = true,
     Anonymous = true,
     Callback = function()
-        if Anonymous = true then
-                    Anonymous = false
-                else
-                    Anonymous = True
+        WindUI:Notify({
+    Title = "WARNING!",
+    Content = "You Cant Turn Off Anonymous For Reasons Like Getting Banned Etc, Thank You.",
+    Duration = 3,
+    Icon = "warn",
+})
     end,
 }
 
@@ -50,7 +52,7 @@ local Window = WindUI:CreateWindow({
 WindUI:Notify({
     Title = "Success!",
     Content = "Script Loaded Successfully",
-    Duration = 3, -- 3 seconds
+    Duration = 3,
     Icon = "bell",
 })
 
