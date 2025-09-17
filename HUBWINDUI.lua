@@ -6,11 +6,10 @@ WindUI:SetTheme("Dark")
 
 local Window = WindUI:CreateWindow({
     Title = "NexusHub",
-    Icon = "door-open", -- lucide icon
+    Icon = "door-open",
     Author = "by NexueZen A Solo Dev Guy",
     Folder = "NexusHubConfig",
     
-    -- ↓ This all is Optional. You can remove it.
     Size = UDim2.fromOffset(580, 460),
     MinSize = Vector2.new(560, 350),
     MaxSize = Vector2.new(850, 560),
@@ -41,6 +40,13 @@ local Window = WindUI:CreateWindow({
     },                                                              
 })
 
+WindUI:Notify({
+    Title = "Success!",
+    Content = "Script Loaded Successfully",
+    Duration = 3, -- 3 seconds
+    Icon = "bell",
+})
+
 Window:EditOpenButton({
     Title = "Open NexusHub",
     Icon = "script",
@@ -54,6 +60,19 @@ Window:EditOpenButton({
     Enabled = true,
     Draggable = false,
 })
+
+Window:Tag({
+    Title = "v0",
+    Color = Color3.fromHex("#30ff6a"),
+    Radius = 0, -- from 0 to 13
+})
+
+Window:Tag({
+    Title = "BETA",
+    Color = Color3.fromHex("#CF3636"),
+    Radius = 0, -- from 0 to 13
+})
+
 local Tab = Window:Tab({
     Title = "Player",
     Icon = "user",
