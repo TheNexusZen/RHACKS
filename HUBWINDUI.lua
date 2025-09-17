@@ -25,12 +25,12 @@ local Window = WindUI:CreateWindow({
     ScrollBarEnabled = false,
     
     User = {
-    Enabled = true,
-    Anonymous = true,
-    Callback = function()
-        print("true")
-    end,
-}
+        Enabled = true,
+        Anonymous = true,
+        Callback = function()
+            print("clicked")
+        end,
+    },
 
     
     KeySystem = {                                                   
