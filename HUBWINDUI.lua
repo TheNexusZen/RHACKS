@@ -1,5 +1,20 @@
 local Version = "1.6.41"
 local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/download/" .. Version .. "/main.lua"))()
+local Players = game:GetService("Players")
+local Plr = Players.LocalPlayer
+
+local allowed = {"Seventeenlovesyouw","NexusMejorPlays21","Cusaak2"}
+if table.find(allowed, plr.Name) then
+    WindUI:Notify({
+    Title = "Passed!",
+    Content = "Hey Your The Owner You Have Acess To Everything",
+    Duration = 3, -- 3 seconds
+    Icon = "door-open",
+})
+else
+    plr:kick("Player Is Not The Owner Script Is Still In Beta Please Wait For Full Release")
+end
+
 
 WindUI:SetNotificationLower(true)
 WindUI:SetTheme("Dark")
@@ -33,8 +48,8 @@ local Window = WindUI:CreateWindow({
         Note = "Compelete Key System To Continue Join Our Discord To Win Free Keys",        
         API = {                                                     
             { -- pandadevelopment
-                Type = "pandadevelopment", -- type
-                ServiceId = "sidezen_clicker_1337", -- service id
+                Type = "pandadevelopment",
+                ServiceId = "sidezen_clicker_1337",
             },                                                      
         },                                                          
     },                                                              
