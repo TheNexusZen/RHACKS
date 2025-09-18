@@ -126,9 +126,10 @@ RunService.RenderStepped:Connect(function()
 end
 
     end
---// Store original durations
+--// Table to store original durations
 local DefaultDurations = {}
 
+--// Single toggle button only
 local ProxToggle = Player:Toggle({
     Title = "Instant Prox",
     Desc = "Toggle Instant Proximity Prompts",
@@ -136,19 +137,19 @@ local ProxToggle = Player:Toggle({
     Type = "Checkbox",
     Default = false,
     Callback = function(state) 
-        print("Toggle Activated: " .. tostring(state))
+        print("Instant Prox: " .. tostring(state))
 
-        -- loop through all prompts
+        -- loop existing prompts
         for _, prompt in ipairs(workspace:GetDescendants()) do
             if prompt:IsA("ProximityPrompt") then
                 if state then
-                    -- save original duration if not saved
+                    -- save once
                     if not DefaultDurations[prompt] then
                         DefaultDurations[prompt] = prompt.HoldDuration
                     end
                     prompt.HoldDuration = 0
                 else
-                    -- restore original duration if saved
+                    -- restore if saved
                     if DefaultDurations[prompt] then
                         prompt.HoldDuration = DefaultDurations[prompt]
                     end
@@ -158,13 +159,15 @@ local ProxToggle = Player:Toggle({
     end
 })
 
-        
+--// handle new prompts created later
 workspace.DescendantAdded:Connect(function(obj)
-    if obj:IsA("ProximityPrompt") and ProxToggle.Value == true then
-        if not DefaultDurations[obj] then
-            DefaultDurations[obj] = obj.HoldDuration
+    if obj:IsA("ProximityPrompt") then
+        if ProxToggle.Value then
+            if not DefaultDurations[obj] then
+                DefaultDurations[obj] = obj.HoldDuration
+            end
+            obj.HoldDuration = 0
         end
-        obj.HoldDuration = 0
     end
 end)
 
