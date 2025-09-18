@@ -126,5 +126,51 @@ RunService.RenderStepped:Connect(function()
 end
 
     end
+--// Store original durations
+local DefaultDurations = {}
+
+local ProxToggle = Player:Toggle({
+    Title = "Instant Prox",
+    Desc = "Toggle Instant Proximity Prompts",
+    Icon = "tap",
+    Type = "Checkbox",
+    Default = false,
+    Callback = function(state) 
+        print("Toggle Activated: " .. tostring(state))
+
+        -- loop through all prompts
+        for _, prompt in ipairs(workspace:GetDescendants()) do
+            if prompt:IsA("ProximityPrompt") then
+                if state then
+                    -- save original duration if not saved
+                    if not DefaultDurations[prompt] then
+                        DefaultDurations[prompt] = prompt.HoldDuration
+                    end
+                    prompt.HoldDuration = 0
+                else
+                    -- restore original duration if saved
+                    if DefaultDurations[prompt] then
+                        prompt.HoldDuration = DefaultDurations[prompt]
+                    end
+                end
+            end
+        end
+    end
+})
+
+        
+workspace.DescendantAdded:Connect(function(obj)
+    if obj:IsA("ProximityPrompt") and ProxToggle.Value == true then
+        if not DefaultDurations[obj] then
+            DefaultDurations[obj] = obj.HoldDuration
+        end
+        obj.HoldDuration = 0
+    end
+end)
+
+    
+    
+    
+    
 end)
 
