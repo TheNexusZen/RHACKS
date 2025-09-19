@@ -152,7 +152,7 @@ SerTab:Button({
 -- Auto Load Script Toggle
 SerTab:Toggle({
     Title = "Auto Load Script On Server Hop",
-    Desc = "Automatically executes script when joining a new server",
+    Desc = "Automatically executes script when joining a new server SOON wont work but keep it on just incase",
     Default = false,
     Callback = function(state)
         autoLoadScript = state
