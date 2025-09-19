@@ -78,19 +78,19 @@ Window:Tag({
     Radius = 0, -- from 0 to 13
 })
 
-local Player = Window:Tab({
+local player = Window:Tab({
     Title = "Player",
     Icon = "user",
     Locked = false,
 })
 
-local Visuals = Window:Tab({
+local VisualsTab = Window:Tab({
     Title = "Visuals",
     Icon = "eye-closed",
     Locked = false,
 })
 
-local Teleport = Window:Tab({
+local tptab = Window:Tab({
     Title = "Teleport",
     Icon = "map-pinned",
     Locked = false,
@@ -203,7 +203,7 @@ local function getPlayerList()
     return names
 end
 
-local TeleportDown = Teleport:Dropdown({
+local TeleportDown = tptab:Dropdown({
     Title = "Players",
     Values = getPlayerList(),
     Value = "",
@@ -212,7 +212,7 @@ local TeleportDown = Teleport:Dropdown({
     end
 })
 
-local RefreshBtn = Teleport:Button({
+local RefreshBtn = tptab:Button({
     Title = "Refresh List",
     Desc = "Update player dropdown",
     Locked = false,
@@ -221,7 +221,7 @@ local RefreshBtn = Teleport:Button({
     end
 })
 
-local TpBtn = Teleport:Button({
+local TpBtn = tptab:Button({
     Title = "Teleport",
     Desc = "TP to selected player",
     Locked = false,
@@ -239,7 +239,7 @@ local TpBtn = Teleport:Button({
 })
 
 -- Fly Button in Player Tab
-local MobileFlyBtn = Player:Button({
+local MobileFlyBtn = player:Button({
     Title = "Mobile Fly GUI",
     Desc = "Open Mobile Fly Controls",
     Locked = false,
@@ -420,7 +420,7 @@ RunService.Stepped:Connect(function()
 end)
 
 
-local InfJump = Player:Button({
+local InfJump = player:Button({
     Title = "Infinite Jump",
     Desc = "When Pressed You Can Jump Infinitly!",
     Locked = false,
@@ -447,7 +447,7 @@ if plr.Character then hookHumanoid(plr.Character) end
 local speedValue = 70
 local jumpValue = 50
 
-local SpeedSlider = Player:Slider({
+local SpeedSlider = player:Slider({
     Title = "Speed",
     Step = 1,
     Value = {Min = 20, Max = 120, Default = speedValue},
@@ -456,7 +456,7 @@ local SpeedSlider = Player:Slider({
     end
 })
 
-local JumpSlider = Player:Slider({
+local JumpSlider = player:Slider({
     Title = "JumpPower",
     Step = 1,
     Value = {Min = 20, Max = 200, Default = jumpValue},
