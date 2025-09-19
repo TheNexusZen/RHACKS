@@ -238,6 +238,69 @@ local TpBtn = tptab:Button({
     end
 })
 
+local savedSlots = {}
+local currentSlot = nil
+
+local TpDropdown = tptab:Dropdown({
+    Title = "Saved Slots",
+    Values = {},
+    Value = nil,
+    Callback = function(option)
+        currentSlot = option
+    end
+})
+
+local function refreshDropdown()
+    local names = {}
+    for name,_ in pairs(savedSlots) do
+        table.insert(names,name)
+    end
+    TpDropdown:Refresh(names)
+    if #names > 0 then
+        currentSlot = names[1]
+    else
+        currentSlot = nil
+    end
+end
+
+tptab:Button({
+    Title = "Save New Slot",
+    Desc = "Save your current location",
+    Callback = function()
+        local char = plr.Character
+        if char and char:FindFirstChild("HumanoidRootPart") then
+            local slotName = "Slot "..tostring(#savedSlots+1)
+            savedSlots[slotName] = char.HumanoidRootPart.CFrame
+            refreshDropdown()
+        end
+    end
+})
+
+tptab:Button({
+    Title = "Teleport to Slot",
+    Desc = "Teleport to selected saved slot",
+    Callback = function()
+        if currentSlot and savedSlots[currentSlot] then
+            local char = plr.Character
+            if char and char:FindFirstChild("HumanoidRootPart") then
+                char.HumanoidRootPart.CFrame = savedSlots[currentSlot]
+            end
+        end
+    end
+})
+
+tptab:Button({
+    Title = "Delete Slot",
+    Desc = "Delete the selected saved slot",
+    Callback = function()
+        if currentSlot and savedSlots[currentSlot] then
+            savedSlots[currentSlot] = nil
+            refreshDropdown()
+        end
+    end
+})
+
+
 -- Fly Button in Player Tab
 local MobileFlyBtn = player:Button({
     Title = "Mobile Fly GUI",
