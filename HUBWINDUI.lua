@@ -105,11 +105,6 @@ local tptab = Window:Tab({
     Locked = false,
 })
 
-local OtherSec = Window:Section({
-    Title = "Other Tabs",
-    Opened = true,
-})
-
 local SerTab = Window:Tab({
     Title = "Server",
     Icon = "server",
