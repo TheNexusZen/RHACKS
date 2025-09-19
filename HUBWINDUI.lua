@@ -115,18 +115,20 @@ local autoLoadScript = false
 local serverFilter = "Lowest Ping"
 local scriptUrl = "loadstring(game:HttpGet("https://raw.githubusercontent.com/TheNexusZen/RHACKS/main/HUBWINDUI.lua"))()"
 
+-- JobId Input
 local Input = SerTab:Input({
     Title = "Server JobId",
     Desc = "Paste JobId to join a server",
     Value = "",
-    InputIcon = "pointer",
+    InputIcon = "text-cursor",
     Type = "Input",
     Placeholder = "Enter JobId...",
-    Callback = function(input) 
+    Callback = function(input)
         jobIdInputValue = input
     end
 })
 
+-- Join JobId Button
 SerTab:Button({
     Title = "Join Server JobId",
     Desc = "Teleports to the JobId entered",
@@ -137,6 +139,7 @@ SerTab:Button({
     end
 })
 
+-- Copy JobId Button
 SerTab:Button({
     Title = "Copy Current JobId",
     Desc = "Copies current server JobId to clipboard",
@@ -145,6 +148,7 @@ SerTab:Button({
     end
 })
 
+-- Auto Load Script Toggle
 SerTab:Toggle({
     Title = "Auto Load Script On Server Hop",
     Desc = "Automatically executes script when joining a new server",
@@ -154,6 +158,7 @@ SerTab:Toggle({
     end
 })
 
+-- Server Filter Dropdown
 local ServerDropdown = SerTab:Dropdown({
     Title = "Server Filter",
     Values = {"Lowest Ping", "High Players", "Low Players"},
@@ -163,6 +168,7 @@ local ServerDropdown = SerTab:Dropdown({
     end
 })
 
+-- Helper function to fetch servers
 local function getServers(cursor)
     local url = "https://games.roblox.com/v1/games/"..game.PlaceId.."/servers/Public?sortOrder=Asc&limit=100"
     if cursor then
@@ -178,6 +184,7 @@ local function getServers(cursor)
     end
 end
 
+-- Auto-Hop Button
 SerTab:Button({
     Title = "Auto Hop To Filtered Server",
     Desc = "Finds server based on filter and hops",
@@ -199,8 +206,9 @@ SerTab:Button({
             if #servers == 0 then
                 warn("No suitable servers found.")
                 return
-                    end
-                    
+            end
+
+            -- Sort by selected filter
             if serverFilter == "Lowest Ping" then
                 table.sort(servers, function(a,b) return a.ping < b.ping end)
             elseif serverFilter == "High Players" then
@@ -214,9 +222,12 @@ SerTab:Button({
                 print("Teleporting to server:", target.id)
                 TeleportService:TeleportToPlaceInstance(game.PlaceId, target.id, Players.LocalPlayer)
                 if autoLoadScript then
+                    -- small delay to allow teleport to start
                     wait(3)
                     loadstring(game:HttpGet(scriptUrl, true))()
-        end
+                end
+            end
+        end)
     end
 })
 
