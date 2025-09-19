@@ -3,6 +3,7 @@ local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/rel
 local Players = game:GetService("Players")
 local plr = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
+local Camera = workspace.CurrentCamera
 local RunService = game:GetService("RunService")
 
 WindUI:SetNotificationLower(true)
@@ -96,8 +97,6 @@ local tptab = Window:Tab({
     Locked = false,
 })
 
-local playerEspActive = false
-local itemEspActive = false
 local fullbrightActive = false
 
 local originalLighting = {
@@ -108,21 +107,22 @@ local originalLighting = {
     Ambient = game.Lighting.Ambient
 }
 
-VisualsTab:Toggle({
-    Title = "Player ESP",
-    Desc = "Highlight + Nametags",
-    Default = false,
-    Callback = function(state)
-        playerEspActive = state
-    end
-})
+local espObjects = {}
 
 VisualsTab:Toggle({
-    Title = "Item ESP",
-    Desc = "Show items above heads",
+    Title = "Player ESP",
+    Desc = "Toggle ESP",
     Default = false,
     Callback = function(state)
-        itemEspActive = state
+        if state then
+            local ESP = loadstring(game:HttpGet("https://raw.githubusercontent.com/wa0101/Roblox-ESP/refs/heads/main/esp.lua",true))()
+            espObjects = ESP.Objects or {} -- store references to highlights, etc.
+        else
+            for _,obj in pairs(espObjects) do
+                if obj and obj.Parent then obj:Destroy() end
+            end
+            espObjects = {}
+        end
     end
 })
 
@@ -153,144 +153,6 @@ VisualsTab:Toggle({
         end
     end
 })
-
-local function createPlayerESP(pl)
-    local char = pl.Character
-    if not char then return end
-
-    local highlight = char:FindFirstChild("ESP_Highlight") or Instance.new("Highlight", char)
-    highlight.Name = "ESP_Highlight"
-    highlight.FillColor = (plr:IsFriendsWith(pl.UserId) and Color3.new(0,1,0) or Color3.new(1,0,0))
-    highlight.OutlineTransparency = 1
-    highlight.Enabled = playerEspActive
-
-    local head = char:FindFirstChild("Head") or char:FindFirstChild("HumanoidRootPart")
-    if head then
-        local gui = head:FindFirstChild("ESP_Billboard") or Instance.new("BillboardGui")
-        gui.Name = "ESP_Billboard"
-        gui.Adornee = head
-        gui.Size = UDim2.new(0,180,0,20)
-        gui.StudsOffset = Vector3.new(0,2.5,0)
-        gui.AlwaysOnTop = true
-        gui.Parent = head
-
-        local frame = gui:FindFirstChild("Frame") or Instance.new("Frame")
-        frame.Size = UDim2.new(1,0,1,0)
-        frame.BackgroundTransparency = 0.5
-        frame.BackgroundColor3 = Color3.fromRGB(25,25,25)
-        frame.Parent = gui
-
-        local uicorner = frame:FindFirstChild("UICorner") or Instance.new("UICorner",frame)
-        uicorner.CornerRadius = UDim.new(0,6)
-
-        local uistroke = frame:FindFirstChild("UIStroke") or Instance.new("UIStroke",frame)
-        uistroke.Color = Color3.fromRGB(0,255,0)
-        uistroke.Thickness = 1
-
-        frame:ClearAllChildren()
-        frame.Parent = gui
-        uicorner.Parent = frame
-        uistroke.Parent = frame
-
-        local nameLabel = Instance.new("TextLabel", frame)
-        nameLabel.Size = UDim2.new(1,0,1,0)
-        nameLabel.BackgroundTransparency = 1
-        nameLabel.Text = pl.Name
-        nameLabel.TextScaled = true
-        nameLabel.Font = Enum.Font.GothamBold
-        nameLabel.TextColor3 = Color3.new(1,1,1)
-
-        gui.Enabled = playerEspActive
-    end
-end
-
-local function createItemESP(pl)
-    local char = pl.Character
-    if not char then return end
-
-    local head = char:FindFirstChild("Head") or char:FindFirstChild("HumanoidRootPart")
-    if head then
-        local gui = head:FindFirstChild("ItemESP_Billboard") or Instance.new("BillboardGui")
-        gui.Name = "ItemESP_Billboard"
-        gui.Adornee = head
-        gui.Size = UDim2.new(0,180,0,20)
-        gui.StudsOffset = Vector3.new(0,3,0)
-        gui.AlwaysOnTop = true
-        gui.Parent = head
-
-        local frame = gui:FindFirstChild("Frame") or Instance.new("Frame")
-        frame.Size = UDim2.new(1,0,1,0)
-        frame.BackgroundTransparency = 0.5
-        frame.BackgroundColor3 = Color3.fromRGB(35,35,35)
-        frame.Parent = gui
-
-        local uicorner = frame:FindFirstChild("UICorner") or Instance.new("UICorner",frame)
-        uicorner.CornerRadius = UDim.new(0,6)
-
-        local uistroke = frame:FindFirstChild("UIStroke") or Instance.new("UIStroke",frame)
-        uistroke.Color = Color3.fromRGB(255,255,0)
-        uistroke.Thickness = 1
-
-        frame:ClearAllChildren()
-        frame.Parent = gui
-        uicorner.Parent = frame
-        uistroke.Parent = frame
-
-        local backpackItems = {}
-        if pl:FindFirstChild("Backpack") then
-            for _,v in pairs(pl.Backpack:GetChildren()) do
-                table.insert(backpackItems,v.Name)
-            end
-        end
-        for _,v in pairs(char:GetChildren()) do
-            if v:IsA("Tool") then table.insert(backpackItems,v.Name) end
-        end
-
-        if #backpackItems == 0 then
-            local itemLabel = Instance.new("TextLabel", frame)
-            itemLabel.Size = UDim2.new(1,0,0,15)
-            itemLabel.Position = UDim2.new(0,0,0,0)
-            itemLabel.BackgroundTransparency = 1
-            itemLabel.Text = "No items found"
-            itemLabel.TextScaled = true
-            itemLabel.Font = Enum.Font.Gotham
-            itemLabel.TextColor3 = Color3.new(1,1,1)
-            frame.Size = UDim2.new(1,0,0,15)
-        else
-            local offset = 0
-            for i,name in ipairs(backpackItems) do
-                local itemLabel = Instance.new("TextLabel", frame)
-                itemLabel.Size = UDim2.new(1,0,0,15)
-                itemLabel.Position = UDim2.new(0,0,0,offset)
-                itemLabel.BackgroundTransparency = 1
-                itemLabel.Text = name
-                itemLabel.TextScaled = true
-                itemLabel.Font = Enum.Font.Gotham
-                itemLabel.TextColor3 = Color3.new(1,1,1)
-                offset = offset + 15
-            end
-            frame.Size = UDim2.new(1,0,0,offset)
-        end
-
-        gui.Enabled = itemEspActive
-    end
-end
-
-RunService.RenderStepped:Connect(function()
-    for _, pl in pairs(Players:GetPlayers()) do
-        if pl ~= plr then
-            createPlayerESP(pl)
-            createItemESP(pl)
-        end
-    end
-end)
-
-Players.PlayerAdded:Connect(function(pl)
-    createPlayerESP(pl)
-    createItemESP(pl)
-end)
-
-
 
 local selectedTarget
 
