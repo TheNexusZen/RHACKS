@@ -107,22 +107,11 @@ local originalLighting = {
     Ambient = game.Lighting.Ambient
 }
 
-local espObjects = {}
-
-VisualsTab:Toggle({
+VisualsTab:Button({
     Title = "Player ESP",
-    Desc = "Toggle ESP",
-    Default = false,
-    Callback = function(state)
-        if state then
-            local ESP = loadstring(game:HttpGet("https://raw.githubusercontent.com/wa0101/Roblox-ESP/refs/heads/main/esp.lua",true))()
-            espObjects = ESP.Objects or {} -- store references to highlights, etc.
-        else
-            for _,obj in pairs(espObjects) do
-                if obj and obj.Parent then obj:Destroy() end
-            end
-            espObjects = {}
-        end
+    Desc = "⚠️THIS EXECUTES ANOTHER SCRIPT!⚠️ ESP IS FULLY CUSTOMIZABLE.",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/wa0101/Roblox-ESP/refs/heads/main/esp.lua", true))()
     end
 })
 
