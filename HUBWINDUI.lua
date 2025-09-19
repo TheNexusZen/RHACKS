@@ -85,11 +85,98 @@ local Player = Window:Tab({
     Locked = false,
 })
 
+local Visuals = Window:Tab({
+    Title = "Visuals",
+    Icon = "eye-closed",
+    Locked = false,
+})
+
 local Teleport = Window:Tab({
     Title = "Teleport",
     Icon = "map-pinned",
     Locked = false,
 })
+
+local VisualsToggle = Visuals:Toggle({
+    Title = "Player Esp",
+    Desc = "Highlights all players with name tags",
+    Default = false,
+    Callback = function(state)
+        local function applyHighlight(pl)
+            if pl == plr then return end
+            local char = pl.Character
+            if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+
+            if char:FindFirstChild("PlayerHL") then return end -- avoid duplicates
+
+            -- Highlight
+            local hl = Instance.new("Highlight")
+            hl.Name = "PlayerHL"
+            hl.Parent = char
+            if plr:IsFriendsWith(pl.UserId) then
+                hl.FillColor = Color3.fromRGB(0, 255, 0) -- Green for friends
+            else
+                hl.FillColor = Color3.fromRGB(255, 0, 0) -- Red for others
+            end
+            hl.FillTransparency = 0.5
+            hl.OutlineTransparency = 1
+
+            -- BillboardGui
+            local bill = Instance.new("BillboardGui")
+            bill.Name = "PlayerTag"
+            bill.Adornee = char:FindFirstChild("Head") or char:FindFirstChild("HumanoidRootPart")
+            bill.Size = UDim2.new(0,120,0,40)
+            bill.StudsOffset = Vector3.new(0,3,0)
+            bill.AlwaysOnTop = true
+            bill.Parent = char
+
+            local frame = Instance.new("Frame")
+            frame.Size = UDim2.new(1,0,1,0)
+            frame.BackgroundColor3 = Color3.fromRGB(50,50,50)
+            frame.BackgroundTransparency = 0.5
+            frame.Parent = bill
+
+            local corner = Instance.new("UICorner")
+            corner.CornerRadius = UDim.new(0,6)
+            corner.Parent = frame
+
+            local nameLabel = Instance.new("TextLabel")
+            nameLabel.Size = UDim2.new(1,0,1,0)
+            nameLabel.BackgroundTransparency = 1
+            nameLabel.TextColor3 = Color3.new(1,1,1)
+            nameLabel.TextScaled = true
+            nameLabel.Font = Enum.Font.GothamBold
+            nameLabel.Text = "👤 "..pl.Name
+            nameLabel.Parent = frame
+        end
+
+        local function removeHighlight(pl)
+            if pl.Character then
+                local hl = pl.Character:FindFirstChild("PlayerHL")
+                if hl then hl:Destroy() end
+                local bill = pl.Character:FindFirstChild("PlayerTag")
+                if bill then bill:Destroy() end
+            end
+        end
+
+        if state then
+            -- Apply to all current players
+            for _, pl in pairs(Players:GetPlayers()) do
+                applyHighlight(pl)
+            end
+
+            -- Detect new players joining
+            Players.PlayerAdded:Connect(applyHighlight)
+            Players.PlayerRemoving:Connect(removeHighlight)
+        else
+            -- Remove highlights
+            for _, pl in pairs(Players:GetPlayers()) do
+                removeHighlight(pl)
+            end
+        end
+    end
+})
+
 
 local selectedTarget
 
