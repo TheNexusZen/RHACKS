@@ -97,29 +97,30 @@ local Teleport = Window:Tab({
     Locked = false,
 })
 
-local VisualsToggle = Visuals:Toggle({
-    Title = "Player Esp",
+local playerConnections = {}
+local friendsCheck = {}
+local highlightToggleActive = false
+
+VisualsTab:Toggle({
+    Title = "Player Highlights",
     Desc = "Highlights all players with name tags",
     Default = false,
     Callback = function(state)
+        highlightToggleActive = state
+
         local function applyHighlight(pl)
             if pl == plr then return end
             local char = pl.Character
             if not char or not char:FindFirstChild("HumanoidRootPart") then return end
-
-            if char:FindFirstChild("PlayerHL") then return end -- avoid duplicates
+            if char:FindFirstChild("PlayerHL") then return end
 
             -- Highlight
             local hl = Instance.new("Highlight")
             hl.Name = "PlayerHL"
             hl.Parent = char
-            if plr:IsFriendsWith(pl.UserId) then
-                hl.FillColor = Color3.fromRGB(0, 255, 0) -- Green for friends
-            else
-                hl.FillColor = Color3.fromRGB(255, 0, 0) -- Red for others
-            end
             hl.FillTransparency = 0.5
             hl.OutlineTransparency = 1
+            hl.FillColor = plr:IsFriendsWith(pl.UserId) and Color3.fromRGB(0,255,0) or Color3.fromRGB(255,0,0)
 
             -- BillboardGui
             local bill = Instance.new("BillboardGui")
@@ -148,6 +149,13 @@ local VisualsToggle = Visuals:Toggle({
             nameLabel.Font = Enum.Font.GothamBold
             nameLabel.Text = "👤 "..pl.Name
             nameLabel.Parent = frame
+
+            -- Friend color check
+            friendsCheck[pl] = RunService.RenderStepped:Connect(function()
+                if hl and highlightToggleActive then
+                    hl.FillColor = plr:IsFriendsWith(pl.UserId) and Color3.fromRGB(0,255,0) or Color3.fromRGB(255,0,0)
+                end
+            end)
         end
 
         local function removeHighlight(pl)
@@ -157,25 +165,31 @@ local VisualsToggle = Visuals:Toggle({
                 local bill = pl.Character:FindFirstChild("PlayerTag")
                 if bill then bill:Destroy() end
             end
+            if friendsCheck[pl] then
+                friendsCheck[pl]:Disconnect()
+                friendsCheck[pl] = nil
+            end
         end
 
         if state then
-            -- Apply to all current players
             for _, pl in pairs(Players:GetPlayers()) do
                 applyHighlight(pl)
             end
 
-            -- Detect new players joining
-            Players.PlayerAdded:Connect(applyHighlight)
-            Players.PlayerRemoving:Connect(removeHighlight)
+            playerConnections.joinConn = Players.PlayerAdded:Connect(applyHighlight)
+            playerConnections.leaveConn = Players.PlayerRemoving:Connect(removeHighlight)
         else
-            -- Remove highlights
             for _, pl in pairs(Players:GetPlayers()) do
                 removeHighlight(pl)
             end
+
+            if playerConnections.joinConn then playerConnections.joinConn:Disconnect() end
+            if playerConnections.leaveConn then playerConnections.leaveConn:Disconnect() end
+            playerConnections = {}
         end
     end
 })
+
 
 
 local selectedTarget
