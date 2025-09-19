@@ -138,58 +138,159 @@ local TpBtn = Teleport:Button({
     end
 })
 
-local flying = false
-local flySpeed = 50
-local bodyVelocity, bodyGyro
+-- Fly Button in Player Tab
+local MobileFlyBtn = Player:Button({
+    Title = "Mobile Fly GUI",
+    Desc = "Open Mobile Fly Controls",
+    Locked = false,
+    Callback = function()
+        -- Prevent multiple GUI instances
+        if game.CoreGui:FindFirstChild("TimelessFlyGui") then return end
 
-local FlyButton = Player:Toggle({
-    Title = "Fly",
-    Desc = "Toggle Fly",
-    Default = false,
-    Callback = function(state)
-        flying = state
-        local char = plr.Character
-        if not char then return end
-        local hrp = char:FindFirstChild("HumanoidRootPart")
-        local hum = char:FindFirstChildOfClass("Humanoid")
-        if not hrp or not hum then return end
+        local Player = plr
+        local RunService = game:GetService("RunService")
 
-        if flying then
-            hum.PlatformStand = true
-            bodyVelocity = Instance.new("BodyVelocity", hrp)
-            bodyVelocity.MaxForce = Vector3.new(1e5, 1e5, 1e5)
-            bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+        local Character = Player.Character or Player.CharacterAdded:Wait()
+        local HRP = Character:WaitForChild("HumanoidRootPart")
+        local Humanoid = Character:WaitForChild("Humanoid")
 
-            bodyGyro = Instance.new("BodyGyro", hrp)
-            bodyGyro.MaxTorque = Vector3.new(1e5, 1e5, 1e5)
-            bodyGyro.CFrame = hrp.CFrame
-        else
-            hum.PlatformStand = false
-            if bodyVelocity then bodyVelocity:Destroy() end
-            if bodyGyro then bodyGyro:Destroy() end
+        local flying = false
+        local flySpeed = 50
+        local flyDirectionY = 0
+        local conn
+
+        -- GUI
+        local gui = Instance.new("ScreenGui", game.CoreGui)
+        gui.Name = "TimelessFlyGui"
+        gui.ResetOnSpawn = false
+
+        -- Toggle Button
+        local toggleBtn = Instance.new("TextButton", gui)
+        toggleBtn.Size = UDim2.new(0, 40, 0, 40)
+        toggleBtn.Position = UDim2.new(0, 10, 1, -50)
+        toggleBtn.Text = "🔘"
+        toggleBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+        toggleBtn.TextColor3 = Color3.new(1, 1, 1)
+        toggleBtn.Font = Enum.Font.GothamBold
+        toggleBtn.TextScaled = true
+
+        -- Main GUI
+        local main = Instance.new("Frame", gui)
+        main.Size = UDim2.new(0, 300, 0, 210)
+        main.Position = UDim2.new(0.35, 0, 0.3, 0)
+        main.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+        main.Active = true
+        main.Draggable = true
+
+        -- Watermark
+        local wm = Instance.new("TextLabel", main)
+        wm.Size = UDim2.new(1, 0, 0, 20)
+        wm.Text = "made by timeless"
+        wm.Font = Enum.Font.Gotham
+        wm.TextColor3 = Color3.new(1, 1, 1)
+        wm.TextScaled = true
+        wm.BackgroundTransparency = 1
+
+        -- Speed Box
+        local speedBox = Instance.new("TextBox", main)
+        speedBox.Position = UDim2.new(0.1, 0, 0.2, 0)
+        speedBox.Size = UDim2.new(0.8, 0, 0.15, 0)
+        speedBox.PlaceholderText = "Enter Fly Speed"
+        speedBox.Text = tostring(flySpeed)
+        speedBox.TextScaled = true
+        speedBox.Font = Enum.Font.Gotham
+        speedBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+        speedBox.TextColor3 = Color3.new(1, 1, 1)
+        speedBox.ClearTextOnFocus = false
+
+        speedBox.FocusLost:Connect(function()
+            local newSpeed = tonumber(speedBox.Text)
+            if newSpeed then flySpeed = newSpeed end
+        end)
+
+        -- Up Button
+        local upBtn = Instance.new("TextButton", main)
+        upBtn.Position = UDim2.new(0.1, 0, 0.4, 0)
+        upBtn.Size = UDim2.new(0.35, 0, 0.15, 0)
+        upBtn.Text = "⬆️ Up"
+        upBtn.Font = Enum.Font.GothamBold
+        upBtn.TextScaled = true
+        upBtn.BackgroundColor3 = Color3.fromRGB(50, 100, 200)
+        upBtn.TextColor3 = Color3.new(1, 1, 1)
+
+        -- Down Button
+        local downBtn = Instance.new("TextButton", main)
+        downBtn.Position = UDim2.new(0.55, 0, 0.4, 0)
+        downBtn.Size = UDim2.new(0.35, 0, 0.15, 0)
+        downBtn.Text = "⬇️ Down"
+        downBtn.Font = Enum.Font.GothamBold
+        downBtn.TextScaled = true
+        downBtn.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
+        downBtn.TextColor3 = Color3.new(1, 1, 1)
+
+        -- Fly Toggle Button
+        local flyBtn = Instance.new("TextButton", main)
+        flyBtn.Position = UDim2.new(0.1, 0, 0.6, 0)
+        flyBtn.Size = UDim2.new(0.8, 0, 0.2, 0)
+        flyBtn.Text = "🚀 Fly"
+        flyBtn.Font = Enum.Font.GothamBold
+        flyBtn.TextScaled = true
+        flyBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        flyBtn.TextColor3 = Color3.new(1, 1, 1)
+
+        -- Fly logic
+        local function startFly()
+            flying = true
+            conn = RunService.RenderStepped:Connect(function()
+                if HRP and Humanoid then
+                    local move = Humanoid.MoveDirection
+                    local total = Vector3.new(move.X, flyDirectionY, move.Z)
+                    if total.Magnitude > 0 then
+                        HRP.Velocity = total.Unit * flySpeed
+                    else
+                        HRP.Velocity = Vector3.new(0, 0, 0)
+                    end
+                end
+            end)
         end
+
+        local function stopFly()
+            flying = false
+            if conn then conn:Disconnect() end
+            if HRP then HRP.Velocity = Vector3.zero end
+        end
+
+        -- Toggle Fly
+        flyBtn.MouseButton1Click:Connect(function()
+            if flying then
+                stopFly()
+                flyBtn.Text = "🚀 Fly"
+            else
+                startFly()
+                flyBtn.Text = "🛑 Stop Fly"
+            end
+        end)
+
+        -- Up/Down Buttons
+        upBtn.MouseButton1Click:Connect(function()
+            flyDirectionY = 1
+            wait(0.3)
+            flyDirectionY = 0
+        end)
+
+        downBtn.MouseButton1Click:Connect(function()
+            flyDirectionY = -1
+            wait(0.3)
+            flyDirectionY = 0
+        end)
+
+        -- Show/Hide GUI
+        toggleBtn.MouseButton1Click:Connect(function()
+            main.Visible = not main.Visible
+        end)
     end
 })
 
-local function getMoveVector()
-    local moveVec = Vector3.new()
-    if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveVec = moveVec + workspace.CurrentCamera.CFrame.LookVector end
-    if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveVec = moveVec - workspace.CurrentCamera.CFrame.LookVector end
-    if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveVec = moveVec - workspace.CurrentCamera.CFrame.RightVector end
-    if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveVec = moveVec + workspace.CurrentCamera.CFrame.RightVector end
-    if UserInputService:IsKeyDown(Enum.KeyCode.Space) then moveVec = moveVec + Vector3.new(0, 1, 0) end
-    if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then moveVec = moveVec - Vector3.new(0, 1, 0) end
-    return moveVec.Unit * flySpeed
-end
-
-RunService.RenderStepped:Connect(function()
-    if flying and bodyVelocity then
-        bodyVelocity.Velocity = getMoveVector()
-        if bodyGyro then
-            bodyGyro.CFrame = workspace.CurrentCamera.CFrame
-        end
-    end
-end)
 
 
 local noclip = false
