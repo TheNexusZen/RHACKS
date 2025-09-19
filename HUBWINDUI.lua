@@ -240,7 +240,7 @@ local originalLighting = {
 
 VisualsTab:Button({
     Title = "Player ESP",
-    Desc = "⚠️THIS EXECUTES ANOTHER SCRIPT!⚠️ ESP IS FULLY CUSTOMIZABLE.",
+    Desc = "⚠️THIS EXECUTES ANOTHER SCRIPT!⚠️ BROKEN CURRENTLY.",
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/wa0101/Roblox-ESP/refs/heads/main/esp.lua", true))()
     end
