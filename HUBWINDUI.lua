@@ -85,6 +85,21 @@ local Player = Window:Tab({
     Locked = false,
 })
 
+local InfJump = Player:Button({
+    Title = "Infinite Jump",
+    Desc = "When Pressed You Can Jump Infinitly!",
+    Locked = false,
+    Callback = function()
+        UserInputService.JumpRequest:Connect(function()
+            local plr = game.Players.LocalPlayer
+            local hum = plr.Character and plr.Character:FindFirstChildOfClass("Humanoid")
+            if hum then
+                hum:ChangeState(Enum.HumanoidStateType.Jumping)
+            end
+        end)
+    end
+})
+
 local hum
 
 local function hookHumanoid(char)
@@ -127,23 +142,6 @@ RunService.RenderStepped:Connect(function()
 end
 
     end
-
-local InfJump = Player:Button({
-    Title = "Infinite Jump",
-    Desc = "When Pressed You Can Jump Infinitly!",
-    Locked = false,
-    Callback = function()
-        UserInputService.JumpRequest:Connect(function()
-            local plr = game.Players.LocalPlayer
-            local hum = plr.Character and plr.Character:FindFirstChildOfClass("Humanoid")
-            if hum then
-                hum:ChangeState(Enum.HumanoidStateType.Jumping)
-            end
-        end)
-    end
-})
-
-    
     
     
 end)
