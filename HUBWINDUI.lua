@@ -1,4 +1,5 @@
 local Version = "1.6.41"
+local ScriptVersion = "v0"
 local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/download/" .. Version .. "/main.lua"))()
 local Players = game:GetService("Players")
 local plr = Players.LocalPlayer
@@ -12,7 +13,7 @@ WindUI:SetTheme("Dark")
 local Window = WindUI:CreateWindow({
     Title = "NexusHub",
     Icon = "door-open",
-    Author = "by NexueZen A Solo Dev Guy",
+    Author = "Made By NexusZen",
     Folder = "NexusHubConfig",
     
     Size = UDim2.fromOffset(580, 460),
@@ -68,7 +69,7 @@ Window:EditOpenButton({
 })
 
 Window:Tag({
-    Title = "v0",
+    Title = "ScriptVersion",
     Color = Color3.fromHex("#30ff6a"),
     Radius = 0, -- from 0 to 13
 })
