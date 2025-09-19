@@ -96,98 +96,159 @@ local tptab = Window:Tab({
     Locked = false,
 })
 
-local playerConnections = {}
-local friendsCheck = {}
-local highlightToggleActive = false
+local tracersActive = false
+local itemEspActive = false
+local espActive = false
+local fullbrightActive = false
+
+local originalLighting = {
+    Brightness = game.Lighting.Brightness,
+    ClockTime = game.Lighting.ClockTime,
+    FogEnd = game.Lighting.FogEnd,
+    GlobalShadows = game.Lighting.GlobalShadows,
+    Ambient = game.Lighting.Ambient
+}
 
 VisualsTab:Toggle({
-    Title = "Player Highlights",
-    Desc = "Highlights all players with name tags",
+    Title = "ESP",
+    Desc = "Highlight + Nametags",
     Default = false,
     Callback = function(state)
-        highlightToggleActive = state
+        espActive = state
+    end
+})
 
-        local function applyHighlight(pl)
-            if pl == plr then return end
-            local char = pl.Character
-            if not char or not char:FindFirstChild("HumanoidRootPart") then return end
-            if char:FindFirstChild("PlayerHL") then return end
+VisualsTab:Toggle({
+    Title = "Tracers",
+    Desc = "Draw line to players",
+    Default = false,
+    Callback = function(state)
+        tracersActive = state
+    end
+})
 
-            -- Highlight
-            local hl = Instance.new("Highlight")
-            hl.Name = "PlayerHL"
-            hl.Parent = char
-            hl.FillTransparency = 0.5
-            hl.OutlineTransparency = 1
-            hl.FillColor = plr:IsFriendsWith(pl.UserId) and Color3.fromRGB(0,255,0) or Color3.fromRGB(255,0,0)
+VisualsTab:Toggle({
+    Title = "Item ESP",
+    Desc = "Show items above heads",
+    Default = false,
+    Callback = function(state)
+        itemEspActive = state
+    end
+})
 
-            -- BillboardGui
-            local bill = Instance.new("BillboardGui")
-            bill.Name = "PlayerTag"
-            bill.Adornee = char:FindFirstChild("Head") or char:FindFirstChild("HumanoidRootPart")
-            bill.Size = UDim2.new(0,120,0,40)
-            bill.StudsOffset = Vector3.new(0,3,0)
-            bill.AlwaysOnTop = true
-            bill.Parent = char
+VisualsTab:Slider({
+    Title = "FOV",
+    Value = {Min = 70, Max = 200, Default = 70, Step = 1},
+    Callback = function(val)
+        workspace.CurrentCamera.FieldOfView = val
+    end
+})
 
-            local frame = Instance.new("Frame")
-            frame.Size = UDim2.new(1,0,1,0)
-            frame.BackgroundColor3 = Color3.fromRGB(50,50,50)
-            frame.BackgroundTransparency = 0.5
-            frame.Parent = bill
-
-            local corner = Instance.new("UICorner")
-            corner.CornerRadius = UDim.new(0,6)
-            corner.Parent = frame
-
-            local nameLabel = Instance.new("TextLabel")
-            nameLabel.Size = UDim2.new(1,0,1,0)
-            nameLabel.BackgroundTransparency = 1
-            nameLabel.TextColor3 = Color3.new(1,1,1)
-            nameLabel.TextScaled = true
-            nameLabel.Font = Enum.Font.GothamBold
-            nameLabel.Text = "👤 "..pl.Name
-            nameLabel.Parent = frame
-
-            -- Friend color check
-            friendsCheck[pl] = RunService.RenderStepped:Connect(function()
-                if hl and highlightToggleActive then
-                    hl.FillColor = plr:IsFriendsWith(pl.UserId) and Color3.fromRGB(0,255,0) or Color3.fromRGB(255,0,0)
-                end
-            end)
-        end
-
-        local function removeHighlight(pl)
-            if pl.Character then
-                local hl = pl.Character:FindFirstChild("PlayerHL")
-                if hl then hl:Destroy() end
-                local bill = pl.Character:FindFirstChild("PlayerTag")
-                if bill then bill:Destroy() end
-            end
-            if friendsCheck[pl] then
-                friendsCheck[pl]:Disconnect()
-                friendsCheck[pl] = nil
-            end
-        end
-
+VisualsTab:Toggle({
+    Title = "Fullbright",
+    Desc = "Bright game",
+    Default = false,
+    Callback = function(state)
+        fullbrightActive = state
         if state then
-            for _, pl in pairs(Players:GetPlayers()) do
-                applyHighlight(pl)
-            end
-
-            playerConnections.joinConn = Players.PlayerAdded:Connect(applyHighlight)
-            playerConnections.leaveConn = Players.PlayerRemoving:Connect(removeHighlight)
+            game.Lighting.Brightness = 2
+            game.Lighting.ClockTime = 14
+            game.Lighting.FogEnd = 1e9
+            game.Lighting.GlobalShadows = false
+            game.Lighting.Ambient = Color3.new(1,1,1)
         else
-            for _, pl in pairs(Players:GetPlayers()) do
-                removeHighlight(pl)
+            for k,v in pairs(originalLighting) do
+                game.Lighting[k] = v
             end
-
-            if playerConnections.joinConn then playerConnections.joinConn:Disconnect() end
-            if playerConnections.leaveConn then playerConnections.leaveConn:Disconnect() end
-            playerConnections = {}
         end
     end
 })
+
+local tracerFolder = Instance.new("Folder", workspace)
+tracerFolder.Name = "TracersFolder"
+
+local function createESP(pl)
+    local char = pl.Character
+    if not char then return end
+
+    local highlight = char:FindFirstChild("ESP_Highlight") or Instance.new("Highlight", char)
+    highlight.Name = "ESP_Highlight"
+    highlight.FillColor = (plr:IsFriendsWith(pl.UserId) and Color3.new(0,1,0) or Color3.new(1,0,0))
+    highlight.OutlineTransparency = 1
+    highlight.Enabled = espActive
+
+    local head = char:FindFirstChild("Head") or char:FindFirstChild("HumanoidRootPart")
+    if head then
+        local gui = head:FindFirstChild("ESP_Billboard") or Instance.new("BillboardGui")
+        gui.Name = "ESP_Billboard"
+        gui.Adornee = head
+        gui.Size = UDim2.new(0,150,0,30)
+        gui.StudsOffset = Vector3.new(0,2.5,0)
+        gui.AlwaysOnTop = true
+        gui.Parent = head
+
+        local frame = gui:FindFirstChild("Frame") or Instance.new("Frame")
+        frame.Size = UDim2.new(1,0,1,0)
+        frame.BackgroundTransparency = 0.5
+        frame.BackgroundColor3 = Color3.fromRGB(30,30,30)
+        frame.Parent = gui
+
+        local text = frame:FindFirstChild("Label") or Instance.new("TextLabel")
+        text.Size = UDim2.new(1,0,1,0)
+        text.BackgroundTransparency = 1
+        text.TextScaled = true
+        text.Font = Enum.Font.GothamBold
+        text.TextColor3 = Color3.new(1,1,1)
+
+        local items = {}
+        if pl:FindFirstChild("Backpack") then
+            for _, itm in pairs(pl.Backpack:GetChildren()) do
+                table.insert(items, itm.Name)
+            end
+        end
+
+        if #items == 0 then
+            text.Text = pl.Name.."\nNo items found"
+        else
+            text.Text = pl.Name.."\n"..table.concat(items,", ")
+        end
+
+        text.Parent = frame
+        gui.Enabled = (espActive or itemEspActive)
+    end
+end
+
+local function createTracer(pl)
+    if not pl.Character or not pl.Character:FindFirstChild("HumanoidRootPart") then return end
+    local part = pl.Character.HumanoidRootPart
+    local cameraPos = workspace.CurrentCamera.CFrame.Position
+    local distance = (cameraPos - part.Position).Magnitude
+
+    local beam = Instance.new("Part")
+    beam.Anchored = true
+    beam.CanCollide = false
+    beam.Material = Enum.Material.Neon
+    beam.Color = (plr:IsFriendsWith(pl.UserId) and Color3.new(0,1,0) or Color3.new(1,0,0))
+    beam.Size = Vector3.new(0.05,0.05,distance)
+    beam.CFrame = CFrame.new(cameraPos, part.Position) * CFrame.new(0,0,-distance/2)
+    beam.Parent = tracerFolder
+end
+
+RunService.RenderStepped:Connect(function()
+    tracerFolder:ClearAllChildren()
+    for _, pl in pairs(Players:GetPlayers()) do
+        if pl ~= plr then
+            createESP(pl)
+            if tracersActive then
+                createTracer(pl)
+            end
+        end
+    end
+end)
+
+Players.PlayerAdded:Connect(function(pl)
+    createESP(pl)
+end)
 
 
 
