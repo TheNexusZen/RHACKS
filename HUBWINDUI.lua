@@ -85,6 +85,59 @@ local Player = Window:Tab({
     Locked = false,
 })
 
+local Teleport = Window:Tab({
+    Title = "Teleport",
+    Icon = "location",
+    Locked = false,
+})
+
+local selectedTarget
+
+local function getPlayerList()
+    local names = {}
+    for _,v in ipairs(Players:GetPlayers()) do
+        if v ~= plr then
+            table.insert(names, v.Name)
+        end
+    end
+    return names
+end
+
+local TeleportDown = Teleport:Dropdown({
+    Title = "Players",
+    Values = getPlayerList(),
+    Value = "",
+    Callback = function(option)
+        selectedTarget = option
+    end
+})
+
+local RefreshBtn = Teleport:Button({
+    Title = "Refresh List",
+    Desc = "Update player dropdown",
+    Locked = false,
+    Callback = function()
+        TeleportDown:Refresh(getPlayerList())
+    end
+})
+
+local TpBtn = Teleport:Button({
+    Title = "Teleport",
+    Desc = "TP to selected player",
+    Locked = false,
+    Callback = function()
+        if selectedTarget then
+            local target = Players:FindFirstChild(selectedTarget)
+            if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+                local char = plr.Character
+                if char and char:FindFirstChild("HumanoidRootPart") then
+                    char.HumanoidRootPart.CFrame = target.Character.HumanoidRootPart.CFrame + Vector3.new(2,0,0)
+                end
+            end
+        end
+    end
+})
+
 local noclip = false
 
 local Noclip = Player:Button({
