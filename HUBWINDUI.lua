@@ -1,11 +1,9 @@
 local Version = "1.6.41"
-local ScriptVersion = "v0"
 local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/download/" .. Version .. "/main.lua"))()
 local Players = game:GetService("Players")
 local plr = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
-
 
 WindUI:SetNotificationLower(true)
 WindUI:SetTheme("Dark")
@@ -69,7 +67,7 @@ Window:EditOpenButton({
 })
 
 Window:Tag({
-    Title = "ScriptVersion",
+    Title = "v0",
     Color = Color3.fromHex("#30ff6a"),
     Radius = 0, -- from 0 to 13
 })
