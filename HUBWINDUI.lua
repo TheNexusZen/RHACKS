@@ -5,6 +5,8 @@ local plr = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
 local Camera = workspace.CurrentCamera
 local RunService = game:GetService("RunService")
+local HttpService = game:GetService("HttpService")
+local TeleportService = game:GetService("TeleportService")
 
 WindUI:SetNotificationLower(true)
 WindUI:SetTheme("Dark")
@@ -106,6 +108,116 @@ local SerTab = Window:Tab({
     Title = "Server",
     Icon = "server",
     Locked = false,
+})
+
+local jobIdInputValue = ""
+local autoLoadScript = false
+local serverFilter = "Lowest Ping"
+local scriptUrl = "loadstring(game:HttpGet("https://raw.githubusercontent.com/TheNexusZen/RHACKS/main/HUBWINDUI.lua"))()"
+
+local Input = SerTab:Input({
+    Title = "Server JobId",
+    Desc = "Paste JobId to join a server",
+    Value = "",
+    InputIcon = "pointer",
+    Type = "Input",
+    Placeholder = "Enter JobId...",
+    Callback = function(input) 
+        jobIdInputValue = input
+    end
+})
+
+SerTab:Button({
+    Title = "Join Server JobId",
+    Desc = "Teleports to the JobId entered",
+    Callback = function()
+        if jobIdInputValue ~= "" then
+            TeleportService:TeleportToPlaceInstance(game.PlaceId, jobIdInputValue, Players.LocalPlayer)
+        end
+    end
+})
+
+SerTab:Button({
+    Title = "Copy Current JobId",
+    Desc = "Copies current server JobId to clipboard",
+    Callback = function()
+        setclipboard(game.JobId)
+    end
+})
+
+SerTab:Toggle({
+    Title = "Auto Load Script On Server Hop",
+    Desc = "Automatically executes script when joining a new server",
+    Default = false,
+    Callback = function(state)
+        autoLoadScript = state
+    end
+})
+
+local ServerDropdown = SerTab:Dropdown({
+    Title = "Server Filter",
+    Values = {"Lowest Ping", "High Players", "Low Players"},
+    Value = "Lowest Ping",
+    Callback = function(option)
+        serverFilter = option
+    end
+})
+
+local function getServers(cursor)
+    local url = "https://games.roblox.com/v1/games/"..game.PlaceId.."/servers/Public?sortOrder=Asc&limit=100"
+    if cursor then
+        url = url.."&cursor="..cursor
+    end
+    local success, data = pcall(function()
+        return HttpService:JSONDecode(game:HttpGet(url))
+    end)
+    if success and data and data.data then
+        return data
+    else
+        return nil
+    end
+end
+
+SerTab:Button({
+    Title = "Auto Hop To Filtered Server",
+    Desc = "Finds server based on filter and hops",
+    Callback = function()
+        spawn(function()
+            local servers = {}
+            local cursor
+            repeat
+                local data = getServers(cursor)
+                if not data then break end
+                for _, s in pairs(data.data) do
+                    if s.playing < s.maxPlayers then
+                        table.insert(servers, s)
+                    end
+                end
+                cursor = data.nextPageCursor
+            until not cursor
+
+            if #servers == 0 then
+                warn("No suitable servers found.")
+                return
+                    end
+                    
+            if serverFilter == "Lowest Ping" then
+                table.sort(servers, function(a,b) return a.ping < b.ping end)
+            elseif serverFilter == "High Players" then
+                table.sort(servers, function(a,b) return a.playing > b.playing end)
+            elseif serverFilter == "Low Players" then
+                table.sort(servers, function(a,b) return a.playing < b.playing end)
+            end
+
+            local target = servers[1]
+            if target then
+                print("Teleporting to server:", target.id)
+                TeleportService:TeleportToPlaceInstance(game.PlaceId, target.id, Players.LocalPlayer)
+                if autoLoadScript then
+                    wait(3)
+                    loadstring(game:HttpGet(scriptUrl, true))()
+        end
+    end
 })
 
 local fullbrightActive = false
