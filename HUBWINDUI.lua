@@ -96,9 +96,8 @@ local tptab = Window:Tab({
     Locked = false,
 })
 
-local tracersActive = false
+local playerEspActive = false
 local itemEspActive = false
-local espActive = false
 local fullbrightActive = false
 
 local originalLighting = {
@@ -110,20 +109,11 @@ local originalLighting = {
 }
 
 VisualsTab:Toggle({
-    Title = "ESP",
+    Title = "Player ESP",
     Desc = "Highlight + Nametags",
     Default = false,
     Callback = function(state)
-        espActive = state
-    end
-})
-
-VisualsTab:Toggle({
-    Title = "Tracers",
-    Desc = "Draw line to players",
-    Default = false,
-    Callback = function(state)
-        tracersActive = state
+        playerEspActive = state
     end
 })
 
@@ -164,10 +154,7 @@ VisualsTab:Toggle({
     end
 })
 
-local tracerFolder = Instance.new("Folder", workspace)
-tracerFolder.Name = "TracersFolder"
-
-local function createESP(pl)
+local function createPlayerESP(pl)
     local char = pl.Character
     if not char then return end
 
@@ -175,14 +162,14 @@ local function createESP(pl)
     highlight.Name = "ESP_Highlight"
     highlight.FillColor = (plr:IsFriendsWith(pl.UserId) and Color3.new(0,1,0) or Color3.new(1,0,0))
     highlight.OutlineTransparency = 1
-    highlight.Enabled = espActive
+    highlight.Enabled = playerEspActive
 
     local head = char:FindFirstChild("Head") or char:FindFirstChild("HumanoidRootPart")
     if head then
         local gui = head:FindFirstChild("ESP_Billboard") or Instance.new("BillboardGui")
         gui.Name = "ESP_Billboard"
         gui.Adornee = head
-        gui.Size = UDim2.new(0,150,0,30)
+        gui.Size = UDim2.new(0,180,0,20)
         gui.StudsOffset = Vector3.new(0,2.5,0)
         gui.AlwaysOnTop = true
         gui.Parent = head
@@ -190,64 +177,117 @@ local function createESP(pl)
         local frame = gui:FindFirstChild("Frame") or Instance.new("Frame")
         frame.Size = UDim2.new(1,0,1,0)
         frame.BackgroundTransparency = 0.5
-        frame.BackgroundColor3 = Color3.fromRGB(30,30,30)
+        frame.BackgroundColor3 = Color3.fromRGB(25,25,25)
         frame.Parent = gui
 
-        local text = frame:FindFirstChild("Label") or Instance.new("TextLabel")
-        text.Size = UDim2.new(1,0,1,0)
-        text.BackgroundTransparency = 1
-        text.TextScaled = true
-        text.Font = Enum.Font.GothamBold
-        text.TextColor3 = Color3.new(1,1,1)
+        local uicorner = frame:FindFirstChild("UICorner") or Instance.new("UICorner",frame)
+        uicorner.CornerRadius = UDim.new(0,6)
 
-        local items = {}
-        if pl:FindFirstChild("Backpack") then
-            for _, itm in pairs(pl.Backpack:GetChildren()) do
-                table.insert(items, itm.Name)
-            end
-        end
+        local uistroke = frame:FindFirstChild("UIStroke") or Instance.new("UIStroke",frame)
+        uistroke.Color = Color3.fromRGB(0,255,0)
+        uistroke.Thickness = 1
 
-        if #items == 0 then
-            text.Text = pl.Name.."\nNo items found"
-        else
-            text.Text = pl.Name.."\n"..table.concat(items,", ")
-        end
+        frame:ClearAllChildren()
+        frame.Parent = gui
+        uicorner.Parent = frame
+        uistroke.Parent = frame
 
-        text.Parent = frame
-        gui.Enabled = (espActive or itemEspActive)
+        local nameLabel = Instance.new("TextLabel", frame)
+        nameLabel.Size = UDim2.new(1,0,1,0)
+        nameLabel.BackgroundTransparency = 1
+        nameLabel.Text = pl.Name
+        nameLabel.TextScaled = true
+        nameLabel.Font = Enum.Font.GothamBold
+        nameLabel.TextColor3 = Color3.new(1,1,1)
+
+        gui.Enabled = playerEspActive
     end
 end
 
-local function createTracer(pl)
-    if not pl.Character or not pl.Character:FindFirstChild("HumanoidRootPart") then return end
-    local part = pl.Character.HumanoidRootPart
-    local cameraPos = workspace.CurrentCamera.CFrame.Position
-    local distance = (cameraPos - part.Position).Magnitude
+local function createItemESP(pl)
+    local char = pl.Character
+    if not char then return end
 
-    local beam = Instance.new("Part")
-    beam.Anchored = true
-    beam.CanCollide = false
-    beam.Material = Enum.Material.Neon
-    beam.Color = (plr:IsFriendsWith(pl.UserId) and Color3.new(0,1,0) or Color3.new(1,0,0))
-    beam.Size = Vector3.new(0.05,0.05,distance)
-    beam.CFrame = CFrame.new(cameraPos, part.Position) * CFrame.new(0,0,-distance/2)
-    beam.Parent = tracerFolder
+    local head = char:FindFirstChild("Head") or char:FindFirstChild("HumanoidRootPart")
+    if head then
+        local gui = head:FindFirstChild("ItemESP_Billboard") or Instance.new("BillboardGui")
+        gui.Name = "ItemESP_Billboard"
+        gui.Adornee = head
+        gui.Size = UDim2.new(0,180,0,20)
+        gui.StudsOffset = Vector3.new(0,3,0)
+        gui.AlwaysOnTop = true
+        gui.Parent = head
+
+        local frame = gui:FindFirstChild("Frame") or Instance.new("Frame")
+        frame.Size = UDim2.new(1,0,1,0)
+        frame.BackgroundTransparency = 0.5
+        frame.BackgroundColor3 = Color3.fromRGB(35,35,35)
+        frame.Parent = gui
+
+        local uicorner = frame:FindFirstChild("UICorner") or Instance.new("UICorner",frame)
+        uicorner.CornerRadius = UDim.new(0,6)
+
+        local uistroke = frame:FindFirstChild("UIStroke") or Instance.new("UIStroke",frame)
+        uistroke.Color = Color3.fromRGB(255,255,0)
+        uistroke.Thickness = 1
+
+        frame:ClearAllChildren()
+        frame.Parent = gui
+        uicorner.Parent = frame
+        uistroke.Parent = frame
+
+        local backpackItems = {}
+        if pl:FindFirstChild("Backpack") then
+            for _,v in pairs(pl.Backpack:GetChildren()) do
+                table.insert(backpackItems,v.Name)
+            end
+        end
+        for _,v in pairs(char:GetChildren()) do
+            if v:IsA("Tool") then table.insert(backpackItems,v.Name) end
+        end
+
+        if #backpackItems == 0 then
+            local itemLabel = Instance.new("TextLabel", frame)
+            itemLabel.Size = UDim2.new(1,0,0,15)
+            itemLabel.Position = UDim2.new(0,0,0,0)
+            itemLabel.BackgroundTransparency = 1
+            itemLabel.Text = "No items found"
+            itemLabel.TextScaled = true
+            itemLabel.Font = Enum.Font.Gotham
+            itemLabel.TextColor3 = Color3.new(1,1,1)
+            frame.Size = UDim2.new(1,0,0,15)
+        else
+            local offset = 0
+            for i,name in ipairs(backpackItems) do
+                local itemLabel = Instance.new("TextLabel", frame)
+                itemLabel.Size = UDim2.new(1,0,0,15)
+                itemLabel.Position = UDim2.new(0,0,0,offset)
+                itemLabel.BackgroundTransparency = 1
+                itemLabel.Text = name
+                itemLabel.TextScaled = true
+                itemLabel.Font = Enum.Font.Gotham
+                itemLabel.TextColor3 = Color3.new(1,1,1)
+                offset = offset + 15
+            end
+            frame.Size = UDim2.new(1,0,0,offset)
+        end
+
+        gui.Enabled = itemEspActive
+    end
 end
 
 RunService.RenderStepped:Connect(function()
-    tracerFolder:ClearAllChildren()
     for _, pl in pairs(Players:GetPlayers()) do
         if pl ~= plr then
-            createESP(pl)
-            if tracersActive then
-                createTracer(pl)
-            end
+            createPlayerESP(pl)
+            createItemESP(pl)
         end
     end
 end)
 
 Players.PlayerAdded:Connect(function(pl)
-    createESP(pl)
+    createPlayerESP(pl)
+    createItemESP(pl)
 end)
 
 
