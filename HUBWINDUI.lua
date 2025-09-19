@@ -144,6 +144,74 @@ local TpBtn = Teleport:Button({
     end
 })
 
+local flying = false
+local flySpeed = 50
+local bodyVelocity, bodyGyro
+
+local FlyButton = Player:Toggle({
+    Title = "Fly",
+    Desc = "Toggle Fly",
+    Default = false,
+    Callback = function(state)
+        flying = state
+        local char = plr.Character
+        if not char then return end
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if not hrp or not hum then return end
+
+        if flying then
+            hum.PlatformStand = true
+            bodyVelocity = Instance.new("BodyVelocity", hrp)
+            bodyVelocity.MaxForce = Vector3.new(1e5, 1e5, 1e5)
+            bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+
+            bodyGyro = Instance.new("BodyGyro", hrp)
+            bodyGyro.MaxTorque = Vector3.new(1e5, 1e5, 1e5)
+            bodyGyro.CFrame = hrp.CFrame
+
+            WindUI:Notify({
+                Title = "Fly",
+                Content = "Fly Enabled ✅",
+                Duration = 3,
+                Icon = "bird",
+            })
+        else
+            hum.PlatformStand = false
+            if bodyVelocity then bodyVelocity:Destroy() end
+            if bodyGyro then bodyGyro:Destroy() end
+
+            WindUI:Notify({
+                Title = "Fly",
+                Content = "Fly Disabled ❌",
+                Duration = 3,
+                Icon = "bird",
+            })
+        end
+    end
+})
+
+local function getMoveVector()
+    local moveVec = Vector3.new()
+    if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveVec = moveVec + workspace.CurrentCamera.CFrame.LookVector end
+    if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveVec = moveVec - workspace.CurrentCamera.CFrame.LookVector end
+    if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveVec = moveVec - workspace.CurrentCamera.CFrame.RightVector end
+    if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveVec = moveVec + workspace.CurrentCamera.CFrame.RightVector end
+    if UserInputService:IsKeyDown(Enum.KeyCode.Space) then moveVec = moveVec + Vector3.new(0, 1, 0) end
+    if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then moveVec = moveVec - Vector3.new(0, 1, 0) end
+    return moveVec.Unit * flySpeed
+end
+
+RunService.RenderStepped:Connect(function()
+    if flying and bodyVelocity then
+        bodyVelocity.Velocity = getMoveVector()
+        if bodyGyro then
+            bodyGyro.CFrame = workspace.CurrentCamera.CFrame
+        end
+    end
+end)
+
+
 local noclip = false
 
 local Noclip = Player:Button({
