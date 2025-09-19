@@ -252,12 +252,12 @@ local TpDropdown = tptab:Dropdown({
 
 local function refreshDropdown()
     local names = {}
-    for name,_ in pairs(savedSlots) do
-        table.insert(names,name)
+    for i = 1, #savedSlots do
+        names[i] = "Slot "..i
     end
     TpDropdown:Refresh(names)
     if #names > 0 then
-        currentSlot = names[1]
+        currentSlot = names[#names]
     else
         currentSlot = nil
     end
@@ -269,8 +269,7 @@ tptab:Button({
     Callback = function()
         local char = plr.Character
         if char and char:FindFirstChild("HumanoidRootPart") then
-            local slotName = "Slot "..tostring(#savedSlots+1)
-            savedSlots[slotName] = char.HumanoidRootPart.CFrame
+            table.insert(savedSlots, char.HumanoidRootPart.CFrame)
             refreshDropdown()
         end
     end
@@ -280,10 +279,14 @@ tptab:Button({
     Title = "Teleport to Slot",
     Desc = "Teleport to selected saved slot",
     Callback = function()
-        if currentSlot and savedSlots[currentSlot] then
-            local char = plr.Character
-            if char and char:FindFirstChild("HumanoidRootPart") then
-                char.HumanoidRootPart.CFrame = savedSlots[currentSlot]
+        if currentSlot then
+            local index = tonumber(string.match(currentSlot,"%d+"))
+            local pos = savedSlots[index]
+            if pos then
+                local char = plr.Character
+                if char and char:FindFirstChild("HumanoidRootPart") then
+                    char.HumanoidRootPart.CFrame = pos
+                end
             end
         end
     end
@@ -293,12 +296,35 @@ tptab:Button({
     Title = "Delete Slot",
     Desc = "Delete the selected saved slot",
     Callback = function()
-        if currentSlot and savedSlots[currentSlot] then
-            savedSlots[currentSlot] = nil
-            refreshDropdown()
+        if currentSlot then
+            local index = tonumber(string.match(currentSlot,"%d+"))
+            if savedSlots[index] then
+                table.remove(savedSlots, index)
+                refreshDropdown()
+            end
         end
     end
 })
+
+-- 📜 Paragraph explaining the system
+tptab:Paragraph({
+    Title = "Teleport Slot System",
+    Desc = 
+        "📌 Saving System:\n" ..
+        "- Every time you press 'Save New Slot', your current position is saved as the next slot in order (Slot 1, Slot 2, Slot 3...)\n\n" ..
+        "🚀 Teleporting:\n" ..
+        "- Select a slot from the dropdown and press 'Teleport to Slot' to snap back to that exact saved location.\n\n" ..
+        "🗑️ Deleting System:\n" ..
+        "- When you delete a slot, only the one you selected will be removed.\n" ..
+        "- After deletion, all remaining slots are automatically renumbered (Slot 1, Slot 2, Slot 3...) so there are no gaps.",
+    Color = "Blue",
+    Image = "",
+    ImageSize = 0,
+    Thumbnail = "",
+    ThumbnailSize = 0,
+    Locked = false
+})
+
 
 
 -- Fly Button in Player Tab
