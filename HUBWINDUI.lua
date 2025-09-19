@@ -480,20 +480,52 @@ local MobileFlyBtn = player:Button({
     end
 })
 
-local InfJump = player:Button({
+-- Infinite Jump Toggle
+local infJumpActive = false
+player:Toggle({
     Title = "Infinite Jump",
-    Desc = "When Pressed You Can Jump Infinitly!",
-    Locked = false,
-    Callback = function()
-        UserInputService.JumpRequest:Connect(function()
-            local plr = game.Players.LocalPlayer
-            local hum = plr.Character and plr.Character:FindFirstChildOfClass("Humanoid")
-            if hum then
-                hum:ChangeState(Enum.HumanoidStateType.Jumping)
-            end
-        end)
+    Desc = "Jump infinitely while on",
+    Default = false,
+    Callback = function(state)
+        infJumpActive = state
     end
 })
+
+-- Listen for jump
+UserInputService.JumpRequest:Connect(function()
+    if infJumpActive then
+        local char = plr.Character
+        if char and char:FindFirstChild("Humanoid") then
+            char.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+        end
+    end
+end)
+
+-- Noclip Toggle
+local noclipActive = false
+player:Toggle({
+    Title = "Noclip",
+    Desc = "Walk through walls while on",
+    Default = false,
+    Callback = function(state)
+        noclipActive = state
+    end
+})
+
+-- RunService loop for noclip
+RunService.Stepped:Connect(function()
+    if noclipActive then
+        local char = plr.Character
+        if char then
+            for _, part in pairs(char:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = false
+                end
+            end
+        end
+    end
+end)
+
 
 local hum
 
