@@ -163,24 +163,10 @@ local FlyButton = Player:Toggle({
             bodyGyro = Instance.new("BodyGyro", hrp)
             bodyGyro.MaxTorque = Vector3.new(1e5, 1e5, 1e5)
             bodyGyro.CFrame = hrp.CFrame
-
-            WindUI:Notify({
-                Title = "Fly",
-                Content = "Fly Enabled ✅",
-                Duration = 3,
-                Icon = "bird",
-            })
         else
             hum.PlatformStand = false
             if bodyVelocity then bodyVelocity:Destroy() end
             if bodyGyro then bodyGyro:Destroy() end
-
-            WindUI:Notify({
-                Title = "Fly",
-                Content = "Fly Disabled ❌",
-                Duration = 3,
-                Icon = "bird",
-            })
         end
     end
 })
