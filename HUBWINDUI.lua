@@ -132,12 +132,6 @@ local TpBtn = Teleport:Button({
                 local char = plr.Character
                 if char and char:FindFirstChild("HumanoidRootPart") then
                     char.HumanoidRootPart.CFrame = target.Character.HumanoidRootPart.CFrame + Vector3.new(2,0,0)
-                        WindUI:Notify({
-    Title = "Sucessfully Teleported!",
-    Content = "Teleported To"...selectedTarget,
-    Duration = 3, -- 3 seconds
-    Icon = "bell",
-})
                 end
             end
         end
@@ -220,13 +214,7 @@ local Noclip = Player:Button({
     Locked = false,
     Callback = function()
         noclip = not noclip
-            WindUI:Notify({
-    Title = "Noclip",
-    Content = "Noclip Is Now Set To"...noclip,
-    Duration = 3, -- 3 seconds
-    Icon = "bell",
-})
-        print("Noclip:", noclip)
+            print("Noclip:", noclip)
     end
 })
 
