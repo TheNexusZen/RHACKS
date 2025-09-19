@@ -395,7 +395,7 @@ local MobileFlyBtn = player:Button({
 
 local noclip = false
 
-local Noclip = Player:Button({
+local Noclip = player:Button({
     Title = "Noclip",
     Desc = "Walk thru walls ez",
     Locked = false,
