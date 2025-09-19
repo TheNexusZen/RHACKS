@@ -391,35 +391,6 @@ local MobileFlyBtn = player:Button({
     end
 })
 
-
-
-local noclip = false
-
-local Noclip = player:Button({
-    Title = "Noclip",
-    Desc = "Walk thru walls ez",
-    Locked = false,
-    Callback = function()
-        noclip = not noclip
-            print("Noclip:", noclip)
-    end
-})
-
-RunService.Stepped:Connect(function()
-    if noclip then
-        local plr = game.Players.LocalPlayer
-        local char = plr.Character
-        if char then
-            for _,part in pairs(char:GetDescendants()) do
-                if part:IsA("BasePart") and part.CanCollide then
-                    part.CanCollide = false
-                end
-            end
-        end
-    end
-end)
-
-
 local InfJump = player:Button({
     Title = "Infinite Jump",
     Desc = "When Pressed You Can Jump Infinitly!",
