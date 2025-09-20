@@ -14,6 +14,7 @@ local MarketplaceService = game:GetService("MarketplaceService")
 local Lighting = game:GetService("Lighting")
 local CoreGui = game:GetService("CoreGui")
 local isPremium = false
+local myAPIKey = "d4042a45de4c983373af815c3c298f7337ae3a66568257b1b7374288f1130ee9"
 
 WindUI:SetNotificationLower(true)
 WindUI:SetTheme("Dark")
@@ -59,6 +60,33 @@ local Window = WindUI:CreateWindow({
         },                                                          
     },                                                              
 })
+
+spawn(function()
+    local keyFolder = "NexusHubConfig"
+    local files = listfiles(keyFolder.."/*.key")
+    if #files == 0 then return end
+    local keyFile = files[1] 
+    local keyName = keyFile:match("([^/\\]+)%.key$") 
+    if not keyName then return end
+
+    local function checkPremium(key)
+        local url = "https://api.pelican.dev/api/fetch/key?apiKey="..myAPIKey.."&fetch="..key
+        local success, data = pcall(function()
+            return HttpService:JSONDecode(game:HttpGet(url))
+        end)
+        if success and data and data.key then
+            return data.key.isPremium == true
+        else
+            return false
+        end
+    end
+
+    if checkPremium(keyName) then
+            isPremium = true
+        else
+            isPremium = false
+        end
+    end)
 
 WindUI:Notify({
     Title = "Success!",
