@@ -13,6 +13,7 @@ local StarterGui = game:GetService("StarterGui")
 local MarketplaceService = game:GetService("MarketplaceService")
 local Lighting = game:GetService("Lighting")
 local CoreGui = game:GetService("CoreGui")
+local isPremium = false
 
 WindUI:SetNotificationLower(true)
 WindUI:SetTheme("Dark")
@@ -49,6 +50,11 @@ local Window = WindUI:CreateWindow({
             { -- pandadevelopment
                 Type = "pandadevelopment",
                 ServiceId = "sidezen_clicker_1337",
+                    Callback = function(keyData)
+                    if keyData.Type == "Premium" then
+                        isPremium = true
+                        end
+                    end
             },                                                      
         },                                                          
     },                                                              
