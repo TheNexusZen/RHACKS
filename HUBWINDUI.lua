@@ -156,7 +156,7 @@ local SerTab = Window:Tab({
 local Premium = Window:Tab({
     Title = "Premium Features",
     Icon = "star",
-    Locked = not IsPremium,
+    Locked = not isPremium,
 })
 
 local jobIdInputValue = ""
