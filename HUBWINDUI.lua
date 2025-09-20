@@ -117,6 +117,12 @@ local SerTab = Window:Tab({
     Locked = false,
 })
 
+local Premium = Window:Tab({
+    Title = "Premium Features",
+    Icon = "star",
+    Locked = not IsPremium,
+})
+
 local jobIdInputValue = ""
 local autoLoadScript = false
 local serverFilter = "High Players"
