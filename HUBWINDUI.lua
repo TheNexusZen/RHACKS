@@ -62,12 +62,20 @@ local Window = WindUI:CreateWindow({
 })
 
 spawn(function()
-    local keyFolder = "NexusHubConfig"
-    local files = listfiles(keyFolder.."/*.key")
-    if #files == 0 then return end
-    local keyFile = files[1] 
-    local keyName = keyFile:match("([^/\\]+)%.key$") 
-    if not keyName then return end
+    local configFolder = "NexusHubConfig"
+    local keyFileName = nil
+
+    if isfolder(configFolder) then
+        local files = listfiles(configFolder)
+        for _, file in pairs(files) do
+            if file:sub(-4) == ".key" then
+                keyFileName = file:match("([^/\\]+)%.key$")
+                break
+            end
+        end
+    end
+
+    if not keyFileName then return end
 
     local function checkPremium(key)
         local url = "https://api.pelican.dev/api/fetch/key?apiKey="..myAPIKey.."&fetch="..key
@@ -81,12 +89,12 @@ spawn(function()
         end
     end
 
-    if checkPremium(keyName) then
-            isPremium = true
-        else
-            isPremium = false
-        end
-    end)
+    if checkPremium(keyFileName) then
+        isPremium = true
+    else
+        isPremium = false
+    end
+end)
 
 WindUI:Notify({
     Title = "Success!",
