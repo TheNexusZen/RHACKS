@@ -15,6 +15,7 @@ local Lighting = game:GetService("Lighting")
 local CoreGui = game:GetService("CoreGui")
 local isPremium = false
 local url = "https://raw.githubusercontent.com/TheNexusZen/RHACKS/refs/heads/main/premiumplayers"
+local PremiumScript = "Script"
 
 WindUI:SetNotificationLower(true)
 WindUI:SetTheme("Dark")
@@ -137,6 +138,35 @@ local Premium = Window:Tab({
     Title = "Premium Features",
     Icon = "star",
     Locked = not isPremium,
+})
+
+Premium:Button({
+    Title = "Upgrade To Premium",
+    Desc = "Opens popup to confirm upgrade",
+    Callback = function()
+        WindUI:Popup({
+            Title = "Are You Sure?",
+            Icon = "info",
+            Content = "Pressing Continue will close the script and execute the Premium version. Are you sure?",
+            Buttons = {
+                {
+                    Title = "Cancel",
+                    Callback = function()
+                    end,
+                    Variant = "Tertiary",
+                },
+                {
+                    Title = "Continue",
+                    Icon = "arrow-right",
+                    Callback = function() 
+                        Window:Close()
+                        loadstring(game:HttpGet(PremiumScript))()
+                    end,
+                    Variant = "Primary",
+                }
+            }
+        })
+    end
 })
 
 local jobIdInputValue = ""
