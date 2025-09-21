@@ -80,7 +80,6 @@ spawn(function()
 
     NexusHubConfig.IsPremium = isPremium
     print("Premium status:", isPremium)
-    end
 end)
 
 WindUI:Notify({
