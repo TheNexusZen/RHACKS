@@ -584,24 +584,41 @@ local MobileFlyBtn = player:Button({
             flyDirectionY = 0
         end)
 
-local hrp = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
-local spinning = false
-local gyro
+local function ragdollCharacter(char)
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if hum then
+        hum.PlatformStand = true
+        hum:ChangeState(Enum.HumanoidStateType.Physics)
+    end
 
-RunService.RenderStepped:Connect(function(delta)
-    if flying and hrp then
-        if not spinning then
-            spinning = true
-            gyro = Instance.new("BodyGyro", hrp)
-            gyro.MaxTorque = Vector3.new(1e5, 1e5, 1e5)
+    for _, part in pairs(char:GetChildren()) do
+        if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+            part.Anchored = false
+            part.CanCollide = true
         end
-        local angle = tick() * math.rad(180)
-        gyro.CFrame = CFrame.Angles(angle, angle, angle)
-    elseif spinning then
-        spinning = false
-        if gyro then
-            gyro:Destroy()
+    end
+end
+
+local function restoreCharacter(char)
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if hum then
+        hum.PlatformStand = false
+        hum:ChangeState(Enum.HumanoidStateType.GettingUp)
+    end
+
+    for _, part in pairs(char:GetChildren()) do
+        if part:IsA("BasePart") then
+            part.Anchored = false
         end
+    end
+end
+
+RunService.RenderStepped:Connect(function()
+    local char = plr.Character
+    if flying and char then
+        ragdollCharacter(char)
+    elseif char then
+        restoreCharacter(char)
     end
 end)
             
