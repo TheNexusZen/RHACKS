@@ -1,3 +1,28 @@
+-- At the very top of your premium script
+if _G.NexusHubLoaded then
+    -- Disconnect any stored connections
+    if _G.NexusHubConnections then
+        for _, conn in pairs(_G.NexusHubConnections) do
+            if conn.Connected then
+                conn:Disconnect()
+            end
+        end
+    end
+
+    -- Destroy old UI window if it exists
+    if Window then
+        Window:Close()
+    end
+
+    -- Optional: remove other global references
+    _G.NexusHubLoaded = nil
+    _G.NexusHubConnections = nil
+end
+
+-- Mark that the premium script is now loaded
+_G.NexusHubLoaded = true
+_G.NexusHubConnections = {}
+
 local Version = "1.6.41"
 local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/download/" .. Version .. "/main.lua"))()
 local Players = game:GetService("Players")
