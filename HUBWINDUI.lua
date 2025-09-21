@@ -14,7 +14,7 @@ local MarketplaceService = game:GetService("MarketplaceService")
 local Lighting = game:GetService("Lighting")
 local CoreGui = game:GetService("CoreGui")
 local isPremium = false
-local url = "URL"
+local url = "https://raw.githubusercontent.com/TheNexusZen/RHACKS/refs/heads/main/premiumplayers"
 
 WindUI:SetNotificationLower(true)
 WindUI:SetTheme("Dark")
