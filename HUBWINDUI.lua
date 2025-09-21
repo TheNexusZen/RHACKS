@@ -13,7 +13,7 @@ local StarterGui = game:GetService("StarterGui")
 local MarketplaceService = game:GetService("MarketplaceService")
 local Lighting = game:GetService("Lighting")
 local CoreGui = game:GetService("CoreGui")
-local isPremium = true
+local isPremium = false
 local myAPIKey = "d4042a45de4c983373af815c3c298f7337ae3a66568257b1b7374288f1130ee9"
 
 WindUI:SetNotificationLower(true)
