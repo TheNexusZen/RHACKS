@@ -15,7 +15,7 @@ local Lighting = game:GetService("Lighting")
 local CoreGui = game:GetService("CoreGui")
 local isPremium = false
 local url = "https://raw.githubusercontent.com/TheNexusZen/RHACKS/refs/heads/main/premiumplayers"
-local PremiumScript = "Script"
+local PremiumScript = "loadstring(game:HttpGet("https://pandadevelopment.net/virtual/file/766a24b2abed7cc9"))()"
 
 WindUI:SetNotificationLower(true)
 WindUI:SetTheme("Dark")
@@ -160,7 +160,7 @@ Premium:Button({
                     Icon = "arrow-right",
                     Callback = function() 
                         Window:Close()
-                        loadstring(game:HttpGet(PremiumScript))()
+                        PremiumScript
                     end,
                     Variant = "Primary",
                 }
