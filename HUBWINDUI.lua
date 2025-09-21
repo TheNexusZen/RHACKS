@@ -674,7 +674,7 @@ RunService.Stepped:Connect(function()
 end)
 
 
-llocal hum
+local hum
 
 local function hookHumanoid(char)
     hum = char:WaitForChild("Humanoid")
