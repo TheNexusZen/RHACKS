@@ -711,3 +711,4 @@ local JumpSlider = player:Slider({
         end
     end
 })
+end)
