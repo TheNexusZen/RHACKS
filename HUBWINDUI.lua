@@ -62,37 +62,34 @@ local Window = WindUI:CreateWindow({
 })
 
 spawn(function()
-    local configFolder = "NexusHubConfig"
-    local keyFileName = nil
+    while not NexusHubConfig or not NexusHubConfig.UserKey do
+        wait(0.5)
+    end
 
-    if isfolder(configFolder) then
-        local files = listfiles(configFolder)
-        for _, file in pairs(files) do
-            if file:sub(-4) == ".key" then
-                keyFileName = file:match("([^/\\]+)%.key$")
+    local enteredKey = NexusHubConfig.UserKey
+    local isPremium = false
+
+    -- loop through all .key files in the folder
+    for _, file in ipairs(listfiles("NexusHubConfig")) do
+        if file:sub(-4) == ".key" then
+            local content = readfile(file)
+            if content and content == enteredKey then
+                isPremium = true
                 break
             end
         end
     end
 
-    if not keyFileName then return end
+    NexusHubConfig.IsPremium = isPremium
+    print("Premium status:", isPremium)
 
-    local function checkPremium(key)
-        local url = "https://api.pelican.dev/api/fetch/key?apiKey="..myAPIKey.."&fetch="..key
-        local success, data = pcall(function()
-            return HttpService:JSONDecode(game:HttpGet(url))
-        end)
-        if success and data and data.key then
-            return data.key.isPremium == true
-        else
-            return false
+    if isPremium then
+        if NexusHub.VisualsTab then
+            NexusHub.VisualsTab.Locked = false
         end
-    end
-
-    if checkPremium(keyFileName) then
-        isPremium = true
-    else
-        isPremium = false
+        if NexusHub.SerTab then
+            NexusHub.SerTab.Locked = false
+        end
     end
 end)
 
