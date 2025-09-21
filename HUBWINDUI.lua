@@ -686,6 +686,7 @@ if plr.Character then hookHumanoid(plr.Character) end
 local speedValue = 70
 local jumpValue = 50
 
+-- Speed Slider
 local SpeedSlider = player:Slider({
     Title = "Speed",
     Step = 1,
@@ -693,25 +694,20 @@ local SpeedSlider = player:Slider({
     Callback = function(val)
         speedValue = val
         if hum then
-        hum.WalkSpeed = speedValue
+            hum.WalkSpeed = speedValue
+        end
     end
 })
 
+-- Jump Slider
 local JumpSlider = player:Slider({
     Title = "JumpPower",
     Step = 1,
     Value = {Min = 20, Max = 200, Default = jumpValue},
     Callback = function(val)
         jumpValue = val
-        if hum.UseJumpPower ~= nil and hum.UseJumpPower == true then
-        hum.JumpPower = jumpValue
-    else
-        hum.JumpHeight = jumpValue / 3.57
-    end
-end
+        if hum then
+            hum.JumpPower = jumpValue
+        end
     end
 })
-
-    end
-    
-end)
