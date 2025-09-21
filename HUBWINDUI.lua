@@ -139,42 +139,46 @@ local Premium = Window:Tab({
     Locked = not isPremium,
 })
 
-loadstring(game:HttpGet("https://pandadevelopment.net/virtual/file/766a24b2abed7cc9"))()
+local PremiumButton = Premium:Button({
+    Title = "Load Premium Script",
+    Desc = "Click to replace current script with premium version",
+    Callback = function()
+        WindUI:Popup({
+            Title = "Are You Sure?",
+            Icon = "info",
+            Content = "Pressing Continue Will Close The Script And Execute The Premium Version. Are You Sure?",
+            Buttons = {
+                {
+                    Title = "Cancel",
+                    Callback = function()
+                        -- Do nothing
+                    end,
+                    Variant = "Tertiary",
+                },
+                {
+                    Title = "Continue",
+                    Icon = "arrow-right",
+                    Callback = function()
+                        -- Close old window
+                        if Window then
+                            Window:Close()
+                        end
 
-WindUI:Popup({
-    Title = "Are You Sure?",
-    Icon = "info",
-    Content = "Pressing Continue Will Close The Script And Execute The Premium Version. Are You Sure?",
-    Buttons = {
-        {
-            Title = "Cancel",
-            Callback = function()
-                -- Do nothing, just close the popup
-            end,
-            Variant = "Tertiary",
-        },
-        {
-            Title = "Continue",
-            Icon = "arrow-right",
-            Callback = function()
-                -- Close old window
-                if Window then
-                    Window:Close()
-                end
+                        -- Disconnect old connections if needed
+                        for _, conn in pairs(getconnections or {}) do
+                            if typeof(conn.Disconnect) == "function" then
+                                conn:Disconnect()
+                            end
+                        end
 
-                -- Disconnect old connections if any (optional cleanup)
-                for _, conn in pairs(getconnections or {}) do
-                    if typeof(conn.Disconnect) == "function" then
-                        conn:Disconnect()
-                    end
-                end
-
-                -- Execute premium loadstring
-                loadstring(game:HttpGet("https://pandadevelopment.net/virtual/file/766a24b2abed7cc9"))()
-            end,
-            Variant = "Primary",
-        }
-    }
+                        -- Execute premium script
+                        loadstring(game:HttpGet("https://pandadevelopment.net/virtual/file/766a24b2abed7cc9"))()
+                    end,
+                    Variant = "Primary",
+                }
+            }
+        })
+    end
 })
                             
                             
