@@ -139,40 +139,45 @@ local Premium = Window:Tab({
     Locked = not isPremium,
 })
 
-Premium:Button({
-    Title = "Upgrade To Premium",
-    Desc = "Opens popup to confirm upgrade",
-    Callback = function()
-        WindUI:Popup({
-            Title = "Are You Sure?",
-            Icon = "info",
-            Content = "Pressing Continue will close the script and execute the Premium version. Are you sure?",
-            Buttons = {
-                {
-                    Title = "Cancel",
-                    Callback = function()
-                    end,
-                    Variant = "Tertiary",
-                },
-                {
-                    Title = "Continue",
-                    Icon = "arrow-right",
-                    Callback = function() 
-                        Window:Close()
-                       for _, conn in pairs(getconnections or {}) do
+loadstring(game:HttpGet("https://pandadevelopment.net/virtual/file/766a24b2abed7cc9"))()
+
+WindUI:Popup({
+    Title = "Are You Sure?",
+    Icon = "info",
+    Content = "Pressing Continue Will Close The Script And Execute The Premium Version. Are You Sure?",
+    Buttons = {
+        {
+            Title = "Cancel",
+            Callback = function()
+                -- Do nothing, just close the popup
+            end,
+            Variant = "Tertiary",
+        },
+        {
+            Title = "Continue",
+            Icon = "arrow-right",
+            Callback = function()
+                -- Close old window
+                if Window then
+                    Window:Close()
+                end
+
+                -- Disconnect old connections if any (optional cleanup)
+                for _, conn in pairs(getconnections or {}) do
                     if typeof(conn.Disconnect) == "function" then
                         conn:Disconnect()
                     end
                 end
-                end
-                        loadstring(game:HttpGet("https://pandadevelopment.net/virtual/file/766a24b2abed7cc9"))()
-                    end,
-                    Variant = "Primary",
-                }
-            }
-        })
-    end
+
+                -- Execute premium loadstring
+                loadstring(game:HttpGet("https://pandadevelopment.net/virtual/file/766a24b2abed7cc9"))()
+            end,
+            Variant = "Primary",
+        }
+    }
 })
+                            
+                            
 
 local jobIdInputValue = ""
 local autoLoadScript = false
