@@ -583,44 +583,6 @@ local MobileFlyBtn = player:Button({
             wait(0.3)
             flyDirectionY = 0
         end)
-
-local function ragdollCharacter(char)
-    local hum = char:FindFirstChildOfClass("Humanoid")
-    if hum then
-        hum.PlatformStand = true
-        hum:ChangeState(Enum.HumanoidStateType.Physics)
-    end
-
-    for _, part in pairs(char:GetChildren()) do
-        if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
-            part.Anchored = false
-            part.CanCollide = true
-        end
-    end
-end
-
-local function restoreCharacter(char)
-    local hum = char:FindFirstChildOfClass("Humanoid")
-    if hum then
-        hum.PlatformStand = false
-        hum:ChangeState(Enum.HumanoidStateType.GettingUp)
-    end
-
-    for _, part in pairs(char:GetChildren()) do
-        if part:IsA("BasePart") then
-            part.Anchored = false
-        end
-    end
-end
-
-RunService.RenderStepped:Connect(function()
-    local char = plr.Character
-    if flying and char then
-        ragdollCharacter(char)
-    elseif char then
-        restoreCharacter(char)
-    end
-end)
             
         -- Show/Hide GUI
         toggleBtn.MouseButton1Click:Connect(function()
