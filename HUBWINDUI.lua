@@ -14,7 +14,7 @@ local MarketplaceService = game:GetService("MarketplaceService")
 local Lighting = game:GetService("Lighting")
 local CoreGui = game:GetService("CoreGui")
 local isPremium = false
-local myAPIKey = "d4042a45de4c983373af815c3c298f7337ae3a66568257b1b7374288f1130ee9"
+local url = "URL"
 
 WindUI:SetNotificationLower(true)
 WindUI:SetTheme("Dark")
@@ -60,6 +60,21 @@ local Window = WindUI:CreateWindow({
         },                                                          
     },                                                              
 })
+
+local success, response = pcall(function()
+    return game:HttpGet(url, true)
+end)
+
+if success and response then
+    local list = {}
+    for line in response:gmatch("[^\r\n]+") do
+        list[line] = true
+    end
+
+    if list[tostring(plr.UserId)] or list[plr.Name] then
+        isPremium = true
+    end
+end
 
 WindUI:Notify({
     Title = "Success!",
