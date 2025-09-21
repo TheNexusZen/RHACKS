@@ -676,17 +676,37 @@ end)
 
 local hum
 
-local function hookHumanoid(char)
-    hum = char:WaitForChild("Humanoid")
+local function updateHumanoid(newHum)
+    hum = newHum
+    if hum then
+        hum.WalkSpeed = speedValue
+        if hum.UseJumpPower ~= nil and hum.UseJumpPower == true then
+            hum.JumpPower = jumpValue
+        else
+            hum.JumpHeight = jumpValue / 3.57
+        end
+    end
 end
 
-plr.CharacterAdded:Connect(hookHumanoid)
-if plr.Character then hookHumanoid(plr.Character) end
+-- Hook whenever the player spawns
+plr.CharacterAdded:Connect(function(char)
+    local newHum = char:WaitForChild("Humanoid")
+    updateHumanoid(newHum)
+end)
 
+-- If character already exists
+if plr.Character then
+    local existingHum = plr.Character:FindFirstChild("Humanoid")
+    if existingHum then
+        updateHumanoid(existingHum)
+    end
+end
+
+-- Slider default values
 local speedValue = 70
 local jumpValue = 50
 
--- Speed Slider
+-- Speed slider
 local SpeedSlider = player:Slider({
     Title = "Speed",
     Step = 1,
@@ -699,7 +719,7 @@ local SpeedSlider = player:Slider({
     end
 })
 
--- Jump Slider
+-- Jump slider
 local JumpSlider = player:Slider({
     Title = "JumpPower",
     Step = 1,
@@ -707,8 +727,11 @@ local JumpSlider = player:Slider({
     Callback = function(val)
         jumpValue = val
         if hum then
-            hum.JumpPower = jumpValue
+            if hum.UseJumpPower ~= nil and hum.UseJumpPower == true then
+                hum.JumpPower = jumpValue
+            else
+                hum.JumpHeight = jumpValue / 3.57
+            end
         end
     end
 })
-end)
