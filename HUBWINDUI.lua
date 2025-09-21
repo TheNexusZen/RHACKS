@@ -159,10 +159,11 @@ Premium:Button({
                     Icon = "arrow-right",
                     Callback = function() 
                         Window:Close()
-                                for _, conn in pairs(getconnections or {}) do
+                       for _, conn in pairs(getconnections or {}) do
                     if typeof(conn.Disconnect) == "function" then
                         conn:Disconnect()
                     end
+                end
                 end
                         loadstring(game:HttpGet("https://pandadevelopment.net/virtual/file/766a24b2abed7cc9"))()
                     end,
