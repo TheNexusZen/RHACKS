@@ -584,6 +584,27 @@ local MobileFlyBtn = player:Button({
             flyDirectionY = 0
         end)
 
+local hrp = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
+local spinning = false
+local gyro
+
+RunService.RenderStepped:Connect(function(delta)
+    if flying and hrp then
+        if not spinning then
+            spinning = true
+            gyro = Instance.new("BodyGyro", hrp)
+            gyro.MaxTorque = Vector3.new(1e5, 1e5, 1e5)
+        end
+        local angle = tick() * math.rad(180)
+        gyro.CFrame = CFrame.Angles(angle, angle, angle)
+    elseif spinning then
+        spinning = false
+        if gyro then
+            gyro:Destroy()
+        end
+    end
+end)
+            
         -- Show/Hide GUI
         toggleBtn.MouseButton1Click:Connect(function()
             main.Visible = not main.Visible
@@ -681,25 +702,4 @@ end
 
     end
     
-local RunService = game:GetService("RunService")
-local hrp = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
-
-local spinning = false
-local gyro
-
-RunService.RenderStepped:Connect(function(delta)
-    if flying and hrp then
-        if not spinning then
-            spinning = true
-            gyro = Instance.new("BodyGyro", hrp)
-            gyro.MaxTorque = Vector3.new(1e5, 1e5, 1e5)
-        end
-        local angle = tick() * math.rad(180) -- rotation speed
-        gyro.CFrame = CFrame.Angles(0, angle, 0)
-    elseif spinning then
-        spinning = false
-        if gyro then
-            gyro:Destroy()
-        end
-    end
 end)
