@@ -61,47 +61,6 @@ local Window = WindUI:CreateWindow({
     },                                                              
 })
 
-local NexusHubConfig = workspace:WaitForChild("NexusHubConfig")
-local extractedKey = nil
-
-local function getPremiumKey()
-    -- Loop through all .key files
-    for _, obj in ipairs(NexusHubConfig:GetChildren()) do
-        if obj:IsA("StringValue") and obj.Name:match("%.key$") then
-            -- Copy the value to a temp variable
-            extractedKey = obj.Value
-
-            -- Optional: create a temporary StringValue file for your use
-            local tempFile = Instance.new("StringValue")
-            tempFile.Name = "key.txt"
-            tempFile.Value = extractedKey
-            tempFile.Parent = NexusHubConfig
-
-            -- Do whatever you need with tempFile.Value here
-            print("Extracted key:", tempFile.Value)
-
-            -- Clean up: remove the temp file
-            tempFile:Destroy()
-        end
-    end
-    return extractedKey
-end
-
--- Execute on script run
-local key = getPremiumKey()
-
--- You can now use `key` to set premium
-if key then
-    if not NexusHubConfig:FindFirstChild("IsPremium") then
-        local premiumFlag = Instance.new("BoolValue")
-        premiumFlag.Name = "IsPremium"
-        premiumFlag.Value = true
-        premiumFlag.Parent = NexusHubConfig
-    else
-        NexusHubConfig.IsPremium.Value = true
-    end
-end
-
 WindUI:Notify({
     Title = "Success!",
     Content = "Script Loaded Successfully",
