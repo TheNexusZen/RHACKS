@@ -69,11 +69,9 @@ spawn(function()
     local enteredKey = NexusHubConfig.UserKey
     local isPremium = false
 
-    -- loop through all .key files in the folder
-    for _, file in ipairs(listfiles("NexusHubConfig")) do
-        if file:sub(-4) == ".key" then
-            local content = readfile(file)
-            if content and content == enteredKey then
+    for _, obj in ipairs(workspace:WaitForChild("NexusHubConfig"):GetChildren()) do
+        if obj:IsA("StringValue") and obj.Name:match("%.key$") then
+            if obj.Value == enteredKey then
                 isPremium = true
                 break
             end
@@ -82,14 +80,6 @@ spawn(function()
 
     NexusHubConfig.IsPremium = isPremium
     print("Premium status:", isPremium)
-
-    if isPremium then
-        if NexusHub.VisualsTab then
-            NexusHub.VisualsTab.Locked = false
-        end
-        if NexusHub.SerTab then
-            NexusHub.SerTab.Locked = false
-        end
     end
 end)
 
