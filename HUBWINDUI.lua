@@ -162,6 +162,14 @@ local PremiumButton = Premium:Button({
                         -- Close old window
                         if Window then
                             Window:Close()
+                        end
+
+                        -- Disconnect old connections if needed
+                        for _, conn in pairs(getconnections or {}) do
+                            if typeof(conn.Disconnect) == "function" then
+                                conn:Disconnect()
+                            end
+                        end
 
                         -- Execute premium script
                         loadstring(game:HttpGet("https://pandadevelopment.net/virtual/file/766a24b2abed7cc9"))()
@@ -671,4 +679,50 @@ RunService.Stepped:Connect(function()
             end
         end
     end
+end)
+
+
+local hum
+
+local function hookHumanoid(char)
+    hum = char:WaitForChild("Humanoid")
+end
+
+plr.CharacterAdded:Connect(hookHumanoid)
+if plr.Character then hookHumanoid(plr.Character) end
+
+local speedValue = 70
+local jumpValue = 50
+
+local SpeedSlider = player:Slider({
+    Title = "Speed",
+    Step = 1,
+    Value = {Min = 20, Max = 120, Default = speedValue},
+    Callback = function(val)
+        speedValue = val
+    end
+})
+
+local JumpSlider = player:Slider({
+    Title = "JumpPower",
+    Step = 1,
+    Value = {Min = 20, Max = 200, Default = jumpValue},
+    Callback = function(val)
+        jumpValue = val
+    end
+})
+
+RunService.RenderStepped:Connect(function()
+    if hum then
+        hum.WalkSpeed = speedValue
+        if hum then
+    if hum.UseJumpPower ~= nil and hum.UseJumpPower == true then
+        hum.JumpPower = jumpValue
+    else
+        hum.JumpHeight = jumpValue / 3.57
+    end
+end
+
+    end
+    
 end)
