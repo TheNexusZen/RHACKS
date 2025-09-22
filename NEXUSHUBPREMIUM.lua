@@ -106,7 +106,14 @@ local SerTab = Window:Tab({
     Locked = false,
 })
 
-local Button = Tab:Button({
+local Game = Window:Tab({
+    Title = "Games",
+    Icon = "gamepad",
+    Locked = false,
+})
+
+
+local BeatBounce = Game:Button({
     Title = "Beat Bounce",
     Desc = "Gives ~700 stars and beats every demon automatically",
     Locked = game.PlaceId ~= 15598056478,  -- unlock only if the game is Beat Bounce
