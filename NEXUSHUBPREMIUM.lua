@@ -119,8 +119,6 @@ local BeatBounce = Game:Button({
     Locked = game.PlaceId ~= 15598056478,  -- unlock only if the game is Beat Bounce
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/TheNexusZen/RHACKS/refs/heads/main/obfuscated_script-1758552804594.lua.txt"))()
-            wait(10)
-            plr:Kick("Rejoin To Get Your Stars...")
     end
 })
 
