@@ -1,28 +1,3 @@
--- At the very top of your premium script
-if _G.NexusHubLoaded then
-    -- Disconnect any stored connections
-    if _G.NexusHubConnections then
-        for _, conn in pairs(_G.NexusHubConnections) do
-            if conn.Connected then
-                conn:Disconnect()
-            end
-        end
-    end
-
-    -- Destroy old UI window if it exists
-    if Window then
-        Window:Close()
-    end
-
-    -- Optional: remove other global references
-    _G.NexusHubLoaded = nil
-    _G.NexusHubConnections = nil
-end
-
--- Mark that the premium script is now loaded
-_G.NexusHubLoaded = true
-_G.NexusHubConnections = {}
-
 local Version = "1.6.41"
 local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/download/" .. Version .. "/main.lua"))()
 local Players = game:GetService("Players")
@@ -129,6 +104,16 @@ local SerTab = Window:Tab({
     Title = "Server",
     Icon = "server",
     Locked = false,
+})
+
+local Button = Tab:Button({
+    Title = "Beat Bounce",
+    Desc = "Gives ~700 stars and beats every demon automatically",
+    Locked = game.PlaceId ~= 15598056478,  -- unlock only if the game is Beat Bounce
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/TheNexusZen/RHACKS/refs/heads/main/obfuscated_script-1758552804594.lua.txt"))()
+            plr:Kick("Rejoin To Get Your Stars...")
+    end
 })
 
 local jobIdInputValue = ""
